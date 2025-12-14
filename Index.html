@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner Ratings ❤️</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f7f7f7;
+  padding: 20px;
+}
+.container {
+  max-width: 420px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+h1, h3 {
+  text-align: center;
+}
+select, input, textarea, button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+button {
+  background: #ff5c8a;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+button:hover {
+  background: #e14b75;
+}
+.entry {
+  background: #f1f1f1;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.small {
+  font-size: 12px;
+  color: #666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Partner Ratings ❤️</h1>
+
+  <!-- ANNIVERSARY -->
+  <h3>🎉 Anniversary</h3>
+  <input type="date" id="anniversaryDate">
+  <button onclick="saveAnniversary()">Save Anniversary</button>
+  <div id="anniversaryDisplay"></div>
+
+  <hr>
+
+  <!-- RATING FORM -->
+  <select id="tone">
+    <option value="😂 Funny">😂 Funny</option>
+    <option value="❤️ Sweet">❤️ Sweet</option>
+    <option value="😈 Savage">😈 Savage</option>
+  </select>
+
+  <select id="period">
+    <option value="Daily">Daily</option>
+    <option value="Weekly">Weekly</option>
+    <option value="Monthly">Monthly</option>
+  </select>
+
+  <input type="number" id="rating" min="1" max="10" placeholder="Rating (1–10)">
+  <textarea id="review" placeholder="Leave a review..."></textarea>
+
+  <button onclick="submitReview()">Save Rating</button>
+
+  <hr>
+
+  <!-- HISTORY -->
+  <h3>📜 History</h3>
+  <div id="history"></div>
+
+  <!-- TOP COMPLAINTS -->
+  <h3>😈 Top Complaints</h3>
+  <div id="complaints"></div>
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+// 🔥 FIREBASE CONFIG (YOU WILL REPLACE THIS)
+const firebaseConfig = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE_AUTH_DOMAIN",
+  databaseURL: "PASTE_DATABASE_URL",
+  projectId: "PASTE_PROJECT_ID",
+  storageBucket: "PASTE_STORAGE_BUCKET",
+  messagingSenderId: "PASTE_MESSAGING_ID",
+  appId: "PASTE_APP_ID"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const reviewsRef = database.ref("reviews");
+const annRef = database.ref("anniversary");
+
+// SUBMIT REVIEW
+function submitReview() {
+  const tone = document.getElementById("tone").value;
+  const period = document.getElementById("period").value;
+  const rating = document.getElementById("rating").value;
+  const review = document.getElementById("review").value;
+
+  if (!rating) {
+    alert("Give a rating first 😅");
+    return;
+  }
+
+  reviewsRef.push({
+    tone,
+    period,
+    rating,
+    review,
+    time: new Date().toLocaleString()
+  });
+
+  document.getElementById("rating").value = "";
+  document.getElementById("review").value = "";
+}
+
+// LOAD HISTORY + COMPLAINTS
+reviewsRef.on("value", snapshot => {
+  const history = document.getElementById("history");
+  const complaintsBox = document.getElementById("complaints");
+
+  history.innerHTML = "";
+  complaintsBox.innerHTML = "";
+
+  const wordCount = {};
+
+  snapshot.forEach(child => {
+    const data = child.val();
+
+    history.innerHTML += `
+      <div class="entry">
+        <strong>${data.period}</strong> — ${data.rating}/10 ${data.tone}
+        <div>${data.review || ""}</div>
+        <div class="small">${data.time}</div>
+      </div>
+    `;
+
+    if (data.review) {
+      data.review.toLowerCase().split(/\s+/).forEach(word => {
+        if (word.length > 4) {
+          wordCount[word] = (wordCount[word] || 0) + 1;
+        }
+      });
+    }
+  });
+
+  Object.entries(wordCount)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0,5)
+    .forEach(([word, count]) => {
+      complaintsBox.innerHTML += `<div>${word} (${count})</div>`;
+    });
+});
+
+// ANNIVERSARY
+function saveAnniversary() {
+  const date = document.getElementById("anniversaryDate").value;
+  annRef.set(date);
+}
+
+annRef.on("value", snap => {
+  if (!snap.exists()) return;
+
+  const annDate = new Date(snap.val());
+  const today = new Date();
+  annDate.setFullYear(today.getFullYear());
+
+  const diff = Math.ceil((annDate - today) / (1000 * 60 * 60 * 24));
+  const display = document.getElementById("anniversaryDisplay");
+
+  if (diff === 0) {
+    display.innerHTML = "🎊 HAPPY ANNIVERSARY 🎊";
+  } else if (diff > 0) {
+    display.innerHTML = `${diff} days until anniversary 💕`;
+  } else {
+    annDate.setFullYear(today.getFullYear() + 1);
+    const nextDiff = Math.ceil((annDate - today) / (1000 * 60 * 60 * 24));
+    display.innerHTML = `${nextDiff} days until anniversary 💕`;
+  }
+});
+</script>
+
+</body>
+</html>
