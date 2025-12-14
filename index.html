@@ -168,50 +168,44 @@
             right: 80px;
         }
 
-        /* TOKEN DISPLAY STYLES */
+        /* TOKEN DISPLAY STYLES (New Location and Size) */
         #tokenDisplay {
             margin-top: 50px;
             padding: 20px 0;
             border-top: 2px solid #ffcc00;
             text-align: center;
-            font-size: 1.8em;
+            font-size: 1.8em; /* Make the icons bigger */
             color: #ffcc00;
         }
         .token-icon {
-            margin: 0 8px;
+            margin: 0 5px;
             display: inline-block;
         }
-
-        /* INDIVIDUAL TOKEN (CUSTOM ICON STYLE: Bag with Powder) */
+        /* Individual Token (Small Tally Mark) */
         .token-individual {
-            font-size: 1em;
+            font-size: 1.1em;
             color: #ccc;
             position: relative;
             padding: 0 5px;
         }
-        .token-individual .token-base {
-            /* Base icon: Shopping Bag for a sack/bag look */
-            color: #666; /* Darker grey for the plastic bag itself */
-            font-size: 1.6em;
+        .token-individual .fa-bag-shopping {
+            color: #666; /* Darker to look like a plastic bag */
+            font-size: 1.5em;
         }
-        .token-individual .token-powder {
-            /* White powder circle layered on top */
-            color: #fff; 
+        .token-individual .fa-circle {
+            color: #fff; /* White powder */
             font-size: 0.6em;
             position: absolute;
-            top: 10px; /* Adjusted to sit lower inside the bag */
+            top: 2px;
             left: 50%;
             transform: translateX(-50%);
-            /* Add a subtle shadow to make it look like powder inside a bag */
-            text-shadow: 0 0 2px rgba(0, 0, 0, 0.5); 
         }
-
-        /* CLAIMED BUNDLE (Large Icon) */
+        /* Claimed Bundle (Large Icon) */
         .token-bundle {
-            font-size: 2.5em;
+            font-size: 2.5em; /* Significantly larger */
             color: #ffcc00;
             margin: 0 15px;
-            border-right: 2px solid #444;
+            border-right: 2px solid #444; /* Visual grouping separator */
             padding-right: 15px;
         }
         .token-bundle:last-child {
@@ -219,7 +213,7 @@
             padding-right: 0;
         }
         .token-bundle-claimed {
-            color: #444;
+            color: #444; /* Gray out claimed bundle */
         }
 
     </style>
@@ -504,11 +498,11 @@
             if (isBundle) {
                 return `<span class="token-icon token-bundle"><i class="fas fa-gift"></i></span>`; // Using gift for a large, completed bundle
             }
-            // Icon for an individual token (Custom plastic sack w/ white powder)
+            // Icon for an individual token (plastic bag w/ white powder)
             return `
                 <span class="token-icon token-individual">
-                    <i class="fas fa-bag-shopping token-base"></i>
-                    <i class="fas fa-circle token-powder"></i>
+                    <i class="fas fa-bag-shopping"></i>
+                    <i class="fas fa-circle"></i>
                 </span>
             `;
         }
