@@ -50,7 +50,6 @@ input, select, textarea {
   border-radius:6px;
 }
 
-/* SAVE BUTTON */
 #saveBtn {
   margin-top:20px;
   width:100%;
@@ -76,7 +75,6 @@ input, select, textarea {
   box-shadow:0 0 #550000, 0 0 25px rgba(255,0,0,1);
 }
 
-/* 🔥 FLAME BURST */
 .flame {
   position:absolute;
   bottom:0;
@@ -93,7 +91,6 @@ input, select, textarea {
   100% { transform:translateY(-120px) scale(0.2); opacity:0; }
 }
 
-/* RATINGS */
 .rating {
   background:#222;
   margin-top:20px;
@@ -104,11 +101,9 @@ input, select, textarea {
 
 .stars { color:gold; }
 
-/* ADMIN */
 .secret-toggle {
   position:fixed;
   bottom:20px;
-  right:20px;
   width:55px;
   height:55px;
   border-radius:50%;
@@ -122,17 +117,22 @@ input, select, textarea {
   box-shadow:0 0 15px rgba(255,0,0,.8);
 }
 
-#adminPanel {
+#adminToggle { right:20px; }
+#tinxToggle { right:90px; background:#fff; color:#000; }
+
+.secret-panel {
   position:fixed;
   bottom:90px;
-  right:20px;
   background:#330000;
   padding:15px;
   border-radius:8px;
   border:2px solid #ff0000;
   display:none;
-  width:220px;
+  width:230px;
 }
+
+#adminPanel { right:20px; }
+#tinxPanel { right:90px; }
 </style>
 </head>
 
@@ -146,10 +146,10 @@ input, select, textarea {
 
 <label>Character</label>
 <select id="character">
-  <option>Pim</option>
-  <option>Charlie</option>
-  <option>Glep</option>
-  <option>Mr Boss</option>
+  <option value="Pim">Pim</option>
+  <option value="Charlie">Charlie</option>
+  <option value="Glep">Glep</option>
+  <option value="Mr Boss">Mr Boss</option>
 </select>
 
 <label>Stars</label>
@@ -163,9 +163,9 @@ input, select, textarea {
 
 <label>PP Energy</label>
 <select id="pp">
-  <option>1</option><option>2</option><option>3</option>
-  <option>4</option><option>5</option><option>6</option>
-  <option>7</option><option>8</option><option>9</option><option>10</option>
+  <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+  <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+  <option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
 </select>
 
 <label>Comment</label>
@@ -176,18 +176,23 @@ input, select, textarea {
 <div id="list"></div>
 </div>
 
-<div class="secret-toggle" id="adminToggle">
-  <i class="fas fa-anchor"></i>
-</div>
+<div id="adminToggle" class="secret-toggle"><i class="fas fa-anchor"></i></div>
+<div id="tinxToggle" class="secret-toggle"><i class="fas fa-gift"></i></div>
 
-<div id="adminPanel">
+<div id="adminPanel" class="secret-panel">
   <label>Admin Password</label>
   <input type="password" id="adminPass">
   <button id="adminLogin">Login</button>
   <p id="adminStatus"></p>
 </div>
 
-<!-- FIREBASE -->
+<div id="tinxPanel" class="secret-panel">
+  <label>Tinx Password</label>
+  <input type="password" id="tinxPass">
+  <button id="tinxClaim">Claim Tokens</button>
+  <p id="tinxStatus"></p>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -201,31 +206,38 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-firebase.database().goOffline();
-firebase.database().goOnline();
 const ratingsRef = db.ref("ratings");
 
-/* ADMIN */
 const ADMIN_PASSWORD = "ppeanile";
+const TINX_PASSWORD = "punchers";
 let isAdmin = false;
 
+/* TOGGLES */
 adminToggle.onclick = () => {
   adminPanel.style.display = adminPanel.style.display === "block" ? "none" : "block";
+  tinxPanel.style.display = "none";
 };
 
+tinxToggle.onclick = () => {
+  tinxPanel.style.display = tinxPanel.style.display === "block" ? "none" : "block";
+  adminPanel.style.display = "none";
+};
+
+/* ADMIN LOGIN */
 adminLogin.onclick = () => {
   if (adminPass.value === ADMIN_PASSWORD) {
     isAdmin = true;
     adminStatus.textContent = "Admin enabled";
     adminStatus.style.color = "#0f0";
     adminPanel.style.display = "none";
+    renderRatings();
   } else {
     adminStatus.textContent = "Wrong password";
     adminStatus.style.color = "#f00";
   }
 };
 
-/* 🔥 Flame burst */
+/* FLAME */
 function flameBurst() {
   for (let i = 0; i < 12; i++) {
     const f = document.createElement("div");
@@ -248,12 +260,13 @@ saveBtn.onclick = () => {
     review: review.value,
     timestamp: Date.now(),
     isToken: starsVal === 5,
-    ...(starsVal === 5 ? { claimed:false } : {})
+    claimed: starsVal === 5 ? false : null
   });
 
   if (starsVal === 5) flameBurst();
 
-  name.value = review.value = "";
+  name.value = "";
+  review.value = "";
 };
 
 /* DELETE */
@@ -262,23 +275,27 @@ window.deleteRating = id => {
   if (confirm("Delete this rating?")) ratingsRef.child(id).remove();
 };
 
-/* DISPLAY */
-ratingsRef.limitToLast(25).on("value", snap => {
-  list.innerHTML = "";
-  snap.forEach(child => {
-    const r = child.val();
-    const div = document.createElement("div");
-    div.className = "rating";
-    div.innerHTML = `
-      <b>${r.name}</b> (${r.character})<br>
-      <span class="stars">${"★".repeat(r.stars)}</span><br>
-      PP: ${r.pp}<br>
-      ${r.review || ""}
-      ${isAdmin ? `<br><button onclick="deleteRating('${child.key}')">Delete</button>` : ""}
-    `;
-    list.prepend(div);
+/* RENDER */
+function renderRatings() {
+  ratingsRef.limitToLast(25).once("value", snap => {
+    list.innerHTML = "";
+    snap.forEach(child => {
+      const r = child.val();
+      const div = document.createElement("div");
+      div.className = "rating";
+      div.innerHTML = `
+        <b>${r.name}</b> (${r.character})<br>
+        <span class="stars">${"★".repeat(r.stars)}</span><br>
+        PP: ${r.pp}<br>
+        ${r.review || ""}
+        ${isAdmin ? `<br><button onclick="deleteRating('${child.key}')">Delete</button>` : ""}
+      `;
+      list.prepend(div);
+    });
   });
-});
+}
+
+ratingsRef.limitToLast(25).on("value", renderRatings);
 </script>
 
 </body>
