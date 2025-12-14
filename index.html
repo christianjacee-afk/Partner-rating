@@ -23,6 +23,7 @@ body {
   border-radius:12px;
   border:4px solid #ff0000;
   box-shadow:0 0 25px rgba(255,0,0,.5);
+  position:relative;
 }
 
 h1 {
@@ -49,7 +50,7 @@ input, select, textarea {
   border-radius:6px;
 }
 
-/* 🔥 SAVE BUTTON */
+/* SAVE BUTTON */
 #saveBtn {
   margin-top:20px;
   width:100%;
@@ -62,41 +63,34 @@ input, select, textarea {
   border-radius:10px;
   color:white;
   cursor:pointer;
-  box-shadow:
-    0 6px #550000,
-    0 0 15px rgba(255,0,0,.8);
+  box-shadow:0 6px #550000, 0 0 15px rgba(255,0,0,.8);
   transition:all .15s ease;
   position:relative;
+  overflow:hidden;
 }
 
-#saveBtn i {
-  margin-right:8px;
-  transition:transform .15s ease;
-}
+#saveBtn i { margin-right:8px; }
 
 #saveBtn:active {
   transform:translateY(6px);
-  box-shadow:
-    0 0 #550000,
-    0 0 25px rgba(255,0,0,1);
+  box-shadow:0 0 #550000, 0 0 25px rgba(255,0,0,1);
 }
 
-#saveBtn:active i {
-  transform:scale(1.3) rotate(-10deg);
-}
-
-#saveBtn::after {
-  content:"";
+/* 🔥 FLAME BURST */
+.flame {
   position:absolute;
-  inset:0;
-  border-radius:10px;
-  box-shadow:0 0 30px rgba(255,0,0,.6);
-  opacity:0;
-  transition:opacity .2s;
+  bottom:0;
+  width:12px;
+  height:12px;
+  background:radial-gradient(circle at center, #fff 0%, #ff0 30%, #ff4500 70%);
+  border-radius:50%;
+  animation:flameUp 1s ease-out forwards;
+  pointer-events:none;
 }
 
-#saveBtn:active::after {
-  opacity:1;
+@keyframes flameUp {
+  0% { transform:translateY(0) scale(1); opacity:1; }
+  100% { transform:translateY(-120px) scale(0.2); opacity:0; }
 }
 
 /* RATINGS */
@@ -108,9 +102,36 @@ input, select, textarea {
   border:1px solid #444;
 }
 
-.stars {
-  color:gold;
-  font-size:1.3em;
+.stars { color:gold; }
+
+/* ADMIN */
+.secret-toggle {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:#ff0000;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.5em;
+  cursor:pointer;
+  box-shadow:0 0 15px rgba(255,0,0,.8);
+}
+
+#adminPanel {
+  position:fixed;
+  bottom:90px;
+  right:20px;
+  background:#330000;
+  padding:15px;
+  border-radius:8px;
+  border:2px solid #ff0000;
+  display:none;
+  width:220px;
 }
 </style>
 </head>
@@ -150,11 +171,20 @@ input, select, textarea {
 <label>Comment</label>
 <textarea id="review"></textarea>
 
-<button id="saveBtn">
-  <i class="fas fa-skull"></i> SAVE RATING
-</button>
+<button id="saveBtn"><i class="fas fa-skull"></i> SAVE RATING</button>
 
 <div id="list"></div>
+</div>
+
+<div class="secret-toggle" id="adminToggle">
+  <i class="fas fa-anchor"></i>
+</div>
+
+<div id="adminPanel">
+  <label>Admin Password</label>
+  <input type="password" id="adminPass">
+  <button id="adminLogin">Login</button>
+  <p id="adminStatus"></p>
 </div>
 
 <!-- FIREBASE -->
@@ -171,41 +201,69 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const ratingsRef = db.ref("ratings");
-
-/* iOS stability */
 firebase.database().goOffline();
 firebase.database().goOnline();
+const ratingsRef = db.ref("ratings");
 
-/* SAVE */
-document.getElementById("saveBtn").onclick = () => {
-  const stars = parseInt(starsEl.value);
+/* ADMIN */
+const ADMIN_PASSWORD = "ppeanile";
+let isAdmin = false;
 
-  const rating = {
-    name: nameEl.value || "Anonymous",
-    character: characterEl.value,
-    stars,
-    pp: parseInt(ppEl.value),
-    review: reviewEl.value,
-    timestamp: Date.now(),
-    isToken: stars === 5,
-    ...(stars === 5 ? { claimed:false } : {})
-  };
-
-  ratingsRef.push(rating);
-  nameEl.value = reviewEl.value = "";
+adminToggle.onclick = () => {
+  adminPanel.style.display = adminPanel.style.display === "block" ? "none" : "block";
 };
 
-/* DOM refs */
-const nameEl = document.getElementById("name");
-const characterEl = document.getElementById("character");
-const starsEl = document.getElementById("stars");
-const ppEl = document.getElementById("pp");
-const reviewEl = document.getElementById("review");
-const list = document.getElementById("list");
+adminLogin.onclick = () => {
+  if (adminPass.value === ADMIN_PASSWORD) {
+    isAdmin = true;
+    adminStatus.textContent = "Admin enabled";
+    adminStatus.style.color = "#0f0";
+    adminPanel.style.display = "none";
+  } else {
+    adminStatus.textContent = "Wrong password";
+    adminStatus.style.color = "#f00";
+  }
+};
+
+/* 🔥 Flame burst */
+function flameBurst() {
+  for (let i = 0; i < 12; i++) {
+    const f = document.createElement("div");
+    f.className = "flame";
+    f.style.left = Math.random() * 100 + "%";
+    saveBtn.appendChild(f);
+    setTimeout(() => f.remove(), 1000);
+  }
+}
+
+/* SAVE */
+saveBtn.onclick = () => {
+  const starsVal = parseInt(stars.value);
+
+  ratingsRef.push({
+    name: name.value || "Anonymous",
+    character: character.value,
+    stars: starsVal,
+    pp: parseInt(pp.value),
+    review: review.value,
+    timestamp: Date.now(),
+    isToken: starsVal === 5,
+    ...(starsVal === 5 ? { claimed:false } : {})
+  });
+
+  if (starsVal === 5) flameBurst();
+
+  name.value = review.value = "";
+};
+
+/* DELETE */
+window.deleteRating = id => {
+  if (!isAdmin) return;
+  if (confirm("Delete this rating?")) ratingsRef.child(id).remove();
+};
 
 /* DISPLAY */
-ratingsRef.limitToLast(20).on("value", snap => {
+ratingsRef.limitToLast(25).on("value", snap => {
   list.innerHTML = "";
   snap.forEach(child => {
     const r = child.val();
@@ -216,6 +274,7 @@ ratingsRef.limitToLast(20).on("value", snap => {
       <span class="stars">${"★".repeat(r.stars)}</span><br>
       PP: ${r.pp}<br>
       ${r.review || ""}
+      ${isAdmin ? `<br><button onclick="deleteRating('${child.key}')">Delete</button>` : ""}
     `;
     list.prepend(div);
   });
