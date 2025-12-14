@@ -2,175 +2,117 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TiffanyTinx Ratings</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-body {
-  background:
-    radial-gradient(circle at top, #2a0000 0%, #0a0a0a 45%),
-    repeating-radial-gradient(circle at center, rgba(255,0,0,.15) 0 2px, transparent 3px 12px);
+body{
+  background:radial-gradient(circle at top,#2b0000,#000);
   color:#eee;
-  font-family:'Cinzel', serif;
+  font-family:'Cinzel',serif;
   padding:20px;
-  min-height:100vh;
 }
-
-.container {
-  max-width:800px;
+.container{
+  max-width:820px;
   margin:auto;
-  background:rgba(20,20,20,.95);
+  background:rgba(15,15,15,.95);
   padding:30px;
-  border-radius:30px;
-  border:3px solid #ff1a1a;
-  box-shadow:
-    0 0 35px rgba(255,0,0,.7),
-    inset 0 0 25px rgba(255,0,0,.2);
+  border-radius:28px;
+  border:3px solid #ff3b3b;
+  box-shadow:0 0 30px rgba(255,0,0,.7);
 }
-
-h1 {
-  font-family:'Metal Mania', cursive;
+h1{
+  font-family:'Metal Mania',cursive;
   text-align:center;
-  font-size:4.5em;
-  color:#ff2b2b;
-  margin-bottom:25px;
-  text-shadow:
-    0 0 10px #ff0000,
-    0 0 25px rgba(255,0,0,.8);
+  font-size:4.8em;
+  color:#ff3b3b;
+  text-shadow:0 0 20px red;
 }
-
-label {
-  display:block;
-  margin-top:18px;
-  margin-bottom:6px;
-  color:#ffb3b3;
-  font-size:.9em;
-  letter-spacing:1px;
-}
-
-input, select, textarea {
+label{margin-top:16px;display:block;color:#ffb3b3}
+input,select,textarea{
   width:100%;
   padding:12px;
-  background:#1e1e1e;
+  background:#1b1b1b;
   border:2px solid #ff3b3b;
   color:#fff;
   border-radius:20px;
-  box-shadow: inset 0 0 10px rgba(255,0,0,.4);
 }
-
-textarea { resize:none; }
-
-#saveBtn {
+#saveBtn{
   margin-top:25px;
+  padding:18px;
   width:100%;
-  padding:18px;
-  font-size:1.3em;
-  font-family:'Metal Mania', cursive;
-  background:
-    linear-gradient(145deg,#ff0000,#ff5c5c);
   border:none;
-  border-radius:999px;
-  color:white;
+  border-radius:35px;
+  background:linear-gradient(#ff5555,#990000);
+  font-size:1.3em;
+  font-weight:bold;
+  color:#000;
   cursor:pointer;
-  box-shadow:
-    0 10px #700000,
-    0 0 30px rgba(255,0,0,1);
-  transition:.2s;
+  box-shadow:0 10px #550000,0 0 30px red;
 }
+#saveBtn:active{transform:translateY(10px);box-shadow:none}
 
-#saveBtn:active {
-  transform:translateY(8px);
-  box-shadow:0 0 #700000, 0 0 40px rgba(255,0,0,1);
-}
-
-/* 🔥 FULLSCREEN FLAME */
-.flame-overlay {
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 50% 85%, #fff 0%, #ff0 18%, #ff4500 40%, #8b0000 65%, transparent 100%);
-  animation:flameRise 2s ease-out forwards;
-}
-
-@keyframes flameRise {
-  0% { opacity:0; transform:translateY(100%); }
-  20% { opacity:1; }
-  100% { opacity:0; transform:translateY(-100%); }
-}
-
-/* RATINGS */
-.rating {
-  background:
-    linear-gradient(180deg, #2b2b2b, #1b1b1b);
-  margin-top:25px;
+.rating{
+  margin-top:22px;
   padding:18px;
-  border-radius:25px;
-  border:2px solid #ff2b2b;
-  box-shadow:
-    0 0 15px rgba(255,0,0,.4),
-    inset 0 0 12px rgba(255,255,255,.05);
+  border-radius:22px;
+  background:#222;
+  border:2px solid #ff3b3b;
+  box-shadow:0 0 15px rgba(255,0,0,.4);
 }
+.stars{color:gold;font-size:1.2em}
 
-.stars {
-  color:#ffd700;
-  font-size:1.2em;
-  text-shadow:0 0 8px gold;
-}
-
-/* FLOATY CUTE EFFECT */
-.rating {
-  animation:floaty 6s ease-in-out infinite;
-}
-
-@keyframes floaty {
-  0%,100% { transform:translateY(0); }
-  50% { transform:translateY(-6px); }
-}
-
-/* ADMIN */
-.secret-toggle {
+.secret-toggle{
   position:fixed;
   bottom:20px;
-  right:20px;
-  width:65px;
-  height:65px;
+  width:60px;height:60px;
   border-radius:50%;
-  background:
-    radial-gradient(circle, #ff5c5c, #ff0000);
-  color:#fff;
+  background:#ff3b3b;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1.8em;
+  font-size:1.6em;
   cursor:pointer;
-  box-shadow:0 0 25px rgba(255,0,0,1);
+  box-shadow:0 0 25px red;
 }
+#adminToggle{right:20px}
+#tinxToggle{right:90px;background:#ff66cc}
 
-#adminPanel {
+.panel{
   position:fixed;
-  bottom:100px;
+  bottom:95px;
   right:20px;
-  background:#260000;
+  background:#2a0000;
   padding:18px;
   border-radius:20px;
   border:2px solid #ff3b3b;
   display:none;
-  width:240px;
-  box-shadow:0 0 25px rgba(255,0,0,.8);
+  width:260px;
+}
+button{
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:18px;
+  background:#ff3b3b;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-button {
-  border-radius:999px;
-  padding:10px;
-  background:#ff0000;
-  color:white;
-  border:none;
-  cursor:pointer;
+/* 🔥 FULLSCREEN FLAME */
+.flame{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:radial-gradient(circle at 50% 85%,#fff,#ff0,#ff4500,#8b0000,transparent);
+  animation:rise 2s ease-out forwards;
+}
+@keyframes rise{
+  from{opacity:0;transform:translateY(100%)}
+  25%{opacity:1}
+  to{opacity:0;transform:translateY(-100%)}
 }
 </style>
 </head>
@@ -185,46 +127,53 @@ button {
 
 <label>Character</label>
 <select id="character">
-  <option>Pim</option>
-  <option>Charlie</option>
-  <option>Glep</option>
-  <option>Mr Boss</option>
+  <option value="Pim">Pim</option>
+  <option value="Charlie">Charlie</option>
+  <option value="Glep">Glep</option>
+  <option value="Mr Boss">Mr Boss</option>
 </select>
 
 <label>Stars</label>
 <select id="stars">
-  <option value="1">1</option>
-  <option value="2">2</option>
-  <option value="3">3</option>
-  <option value="4">4</option>
+  <option value="1">1</option><option value="2">2</option>
+  <option value="3">3</option><option value="4">4</option>
   <option value="5">5</option>
 </select>
 
 <label>PP Energy</label>
 <select id="pp">
-  <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-  <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-  <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-  <option value="10">10</option>
+  <option value="1">1</option><option value="2">2</option>
+  <option value="3">3</option><option value="4">4</option>
+  <option value="5">5</option><option value="6">6</option>
+  <option value="7">7</option><option value="8">8</option>
+  <option value="9">9</option><option value="10">10</option>
 </select>
 
 <label>Comment</label>
 <textarea id="review"></textarea>
 
-<button id="saveBtn"><i class="fas fa-skull"></i> SAVE RATING</button>
+<button id="saveBtn"><i class="fas fa-heart"></i> SAVE RATING</button>
 
 <div id="list"></div>
 </div>
 
-<div class="secret-toggle" id="adminToggle">
-  <i class="fas fa-anchor"></i>
-</div>
+<!-- TOGGLES -->
+<div id="adminToggle" class="secret-toggle"><i class="fas fa-anchor"></i></div>
+<div id="tinxToggle" class="secret-toggle"><i class="fas fa-gift"></i></div>
 
-<div id="adminPanel">
+<!-- PANELS -->
+<div id="adminPanel" class="panel">
   <label>Admin Password</label>
   <input type="password" id="adminPass">
   <button id="adminLogin">Login</button>
   <p id="adminStatus"></p>
+</div>
+
+<div id="tinxPanel" class="panel" style="right:90px">
+  <label>Tinx Password</label>
+  <input type="password" id="tinxPass">
+  <button id="tinxLogin">Login</button>
+  <p id="tinxStatus"></p>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -232,83 +181,99 @@ button {
 
 <script>
 firebase.initializeApp({
-  apiKey: "AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
-  authDomain: "tiffanytinx-bbf9c.firebaseapp.com",
-  databaseURL: "https://tiffanytinx-bbf9c-default-rtdb.firebaseio.com",
-  projectId: "tiffanytinx-bbf9c"
+  apiKey:"AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
+  authDomain:"tiffanytinx-bbf9c.firebaseapp.com",
+  databaseURL:"https://tiffanytinx-bbf9c-default-rtdb.firebaseio.com",
+  projectId:"tiffanytinx-bbf9c"
 });
 
-const db = firebase.database();
-const ratingsRef = db.ref("ratings");
+const db=firebase.database();
+const ref=db.ref("ratings");
 
-const ADMIN_PASSWORD = "ppeanile";
-let isAdmin = false;
+const ADMIN_PASSWORD="ppeanile";
+const TINX_PASSWORD="tinxrules";
+let isAdmin=false,isTinx=false;
 
-adminToggle.onclick = () => {
-  adminPanel.style.display =
-    adminPanel.style.display === "block" ? "none" : "block";
-};
+adminToggle.onclick=()=>adminPanel.style.display=adminPanel.style.display==="block"?"none":"block";
+tinxToggle.onclick=()=>tinxPanel.style.display=tinxPanel.style.display==="block"?"none":"block";
 
-adminLogin.onclick = () => {
-  if (adminPass.value === ADMIN_PASSWORD) {
-    isAdmin = true;
-    adminStatus.textContent = "Admin enabled";
-    adminStatus.style.color = "#0f0";
-    adminPanel.style.display = "none";
+adminLogin.onclick=()=>{
+  if(adminPass.value===ADMIN_PASSWORD){
+    isAdmin=true;
+    adminStatus.textContent="Admin enabled";
     render();
   }
 };
 
-function fullFlame() {
-  const f = document.createElement("div");
-  f.className = "flame-overlay";
-  document.body.appendChild(f);
-  setTimeout(() => f.remove(), 2000);
-}
-
-saveBtn.onclick = () => {
-  const starsVal = parseInt(stars.value);
-  ratingsRef.push({
-    name: name.value || "Anonymous",
-    character: character.value,
-    stars: starsVal,
-    pp: parseInt(pp.value),
-    review: review.value,
-    timestamp: Date.now()
-  });
-
-  if (starsVal === 5) fullFlame();
-
-  name.value = "";
-  review.value = "";
-};
-
-window.deleteRating = id => {
-  if (isAdmin && confirm("Delete this rating?")) {
-    ratingsRef.child(id).remove();
+tinxLogin.onclick=()=>{
+  if(tinxPass.value===TINX_PASSWORD){
+    isTinx=true;
+    tinxStatus.textContent="Tinx enabled";
+    render();
   }
 };
 
-function render() {
-  ratingsRef.limitToLast(25).once("value", snap => {
-    list.innerHTML = "";
-    snap.forEach(child => {
-      const r = child.val();
-      const div = document.createElement("div");
-      div.className = "rating";
-      div.innerHTML = `
-        <b>${r.name || "Anonymous"}</b> (${r.character || "Unknown"})<br>
-        <span class="stars">${"★".repeat(r.stars || 0)}</span><br>
-        PP: ${r.pp ?? "N/A"}<br>
-        ${r.review || ""}
-        ${isAdmin ? `<br><button onclick="deleteRating('${child.key}')">Delete</button>` : ""}
-      `;
-      list.prepend(div);
+function flame(){
+  const f=document.createElement("div");
+  f.className="flame";
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(),2000);
+}
+
+saveBtn.onclick=()=>{
+  const s=parseInt(stars.value);
+  ref.push({
+    name:name.value||"Anonymous",
+    character:character.value,
+    stars:s,
+    pp:parseInt(pp.value),
+    review:review.value,
+    token:s===5,
+    claimed:false,
+    time:Date.now()
+  });
+  if(s===5) flame();
+  name.value="";review.value="";
+};
+
+window.del=id=>isAdmin&&confirm("Delete?")&&ref.child(id).remove();
+window.claim=id=>isTinx&&ref.child(id).update({claimed:true});
+window.unclaim=id=>isTinx&&ref.child(id).update({claimed:false});
+
+window.editRating=(id,r)=>{
+  if(!isAdmin) return;
+  const n=prompt("Name:",r.name)||r.name;
+  const c=prompt("Character:",r.character)||r.character;
+  const s=parseInt(prompt("Stars:",r.stars))||r.stars;
+  const p=parseInt(prompt("PP:",r.pp))||r.pp;
+  const rev=prompt("Comment:",r.review)||r.review;
+  ref.child(id).update({name:n,character:c,stars:s,pp:p,review:rev});
+};
+
+function render(){
+  ref.limitToLast(25).once("value",snap=>{
+    list.innerHTML="";
+    snap.forEach(c=>{
+      const r=c.val();
+      const d=document.createElement("div");
+      d.className="rating";
+      d.innerHTML=`
+<b>${r.name}</b> (${r.character})<br>
+<span class="stars">${"★".repeat(r.stars)}</span><br>
+PP: ${r.pp}<br>
+${r.review||""}<br>
+${r.token?`🎟 Token: ${r.claimed?"CLAIMED":"UNCLAIMED"}
+${isTinx?`<button onclick="${r.claimed?"unclaim":"claim"}('${c.key}')">${r.claimed?"Unclaim":"Claim"}</button>`:""}`:""}
+${isAdmin?`
+<br>
+<button onclick="editRating('${c.key}',${JSON.stringify(r).replace(/"/g,'&quot;')})">Edit</button>
+<button onclick="del('${c.key}')">Delete</button>`:""}
+`;
+      list.prepend(d);
     });
   });
 }
-
-ratingsRef.on("value", render);
+ref.on("value",render);
 </script>
 
 </body>
