@@ -112,7 +112,7 @@ button{
 }
 .rating button {
     margin-top: 5px;
-    background: #444; /* Darker button for actions */
+    background: #444;
     color: #eee;
     border: 1px solid #ff3b3b;
 }
@@ -130,11 +130,11 @@ button{
   align-items: center;
   justify-content: center;
   font-size: 10em;
-  color: #ff9900; /* Baked potato color */
+  color: #ff9900;
   animation: explode 3s ease-out forwards;
 }
 .potato-explosion::before {
-  content: '🥔'; /* The potato emoji */
+  content: '🥔';
   animation: potato-jiggle 0.1s infinite;
   text-shadow: 0 0 50px rgba(255, 153, 0, 0.8), 0 0 100px rgba(255, 69, 0, 0.5);
 }
@@ -152,52 +152,43 @@ button{
   100% { transform: rotate(-0deg); }
 }
 
-/* --- TOKEN SYSTEM STYLES (Potato Themed) --- */
+/* --- TOKEN SYSTEM STYLES (Potato Pile Themed) --- */
 #tokenDisplay {
     margin-top: 50px;
     padding: 20px 0;
-    border-top: 2px solid #ff9900; /* Potato yellow/orange */
+    border-top: 2px solid #ff9900;
     text-align: center;
-    font-size: 1.8em;
     color: #ff9900;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end; /* Align elements to the bottom */
 }
-.token-icon {
-    margin: 0 8px;
-    display: inline-block;
+#individualTokenPile {
+    display: flex;
+    align-items: flex-end;
+    font-size: 3em; /* Base size for the pile */
+    min-width: 250px; /* Reserve space for the pile */
 }
-
-/* INDIVIDUAL TOKEN (Potato) */
-.token-individual {
-    font-size: 1em;
-    color: #663300; /* Potato skin brown */
+#bundleDisplay {
+    font-size: 1.5em;
+    text-align: right;
+    border-left: 2px solid #444;
+    padding-left: 15px;
+    min-width: 150px;
+}
+.token-pile-item {
+    font-size: 1.2em;
+    color: #8B4513; /* Earthy brown for the potato/gem */
     position: relative;
-    padding: 0 5px;
+    /* Styles to create the stacking effect */
+    margin-right: -10px; /* Overlap them */
+    margin-bottom: -10px; /* Overlap vertically */
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
 }
-.token-individual .token-base {
-    color: #663300; /* Darker brown for the potato */
-    font-size: 1.6em;
-}
-.token-individual .token-powder {
-    color: #ffcc00; /* Butter/Gold */
-    font-size: 0.4em;
-    position: absolute;
-    top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5); 
-}
-
-/* CLAIMED BUNDLE (Large Icon) */
-.token-bundle {
+.token-bundle-icon {
     font-size: 2.5em;
     color: #ff9900;
-    margin: 0 15px;
-    border-right: 2px solid #444;
-    padding-right: 15px;
-}
-.token-bundle:last-child {
-    border-right: none;
-    padding-right: 0;
+    margin-left: 10px;
 }
 .token-bundle-claimed {
     color: #444;
@@ -245,7 +236,8 @@ button{
 <div id="list"></div>
 
 <div id="tokenDisplay">
-    <span id="sackIcons"></span>
+    <div id="individualTokenPile"></div>
+    <div id="bundleDisplay"></div>
 </div>
 
 </div>
@@ -260,7 +252,7 @@ button{
   <p id="adminStatus"></p>
   
   <div id="adminTools" style="display:none; margin-top: 15px; border-top: 1px solid #ff3b3b; padding-top: 10px;">
-    <p style="color: #ffb3b3; font-weight: bold; margin-bottom: 5px;">Bulk Token Control (Adds new token rating)</p>
+    <p style="color: #ffb3b3; font-weight: bold; margin-bottom: 5px;">Bulk Token Control</p>
     <button onclick="adminToggleTokenStatus('add')"><i class="fas fa-plus"></i> Add New Token Rating</button>
     <button onclick="adminToggleTokenStatus('remove')"><i class="fas fa-minus"></i> Remove Oldest Token</button>
   </div>
@@ -313,7 +305,7 @@ adminLogin.onclick=()=>{
   }
 };
 
-// --- NEW ADMIN PER-RATING TOKEN CONTROL ---
+// --- ADMIN PER-RATING TOKEN CONTROL ---
 window.adminSetToken = (id, status) => {
     if (!isAdmin) {
         alert("You must be logged in as Admin to modify token status.");
@@ -326,15 +318,15 @@ window.adminSetToken = (id, status) => {
     
     const updates = {};
     updates.token = status;
-    updates.claimed = status ? false : null; // If removing, set to null to delete the property
-    updates.stars = status ? 5 : 4; // Enforce that a rating with a token is 5 stars
+    updates.claimed = status ? false : null; 
+    updates.stars = status ? 5 : 4; 
 
     // Fetch the current rating to keep existing non-token stars if removing
     ref.child(id).once('value', snapshot => {
         const currentRating = snapshot.val();
-        if (!status) {
-             // If removing token, revert stars back to the original value or just remove the token flag cleanly
-             updates.stars = currentRating.stars;
+        if (!status && currentRating.stars !== 5) {
+             // If removing token and it wasn't a 5-star originally, revert stars
+             updates.stars = currentRating.stars; 
         }
 
         ref.child(id).update(updates).then(() => {
@@ -350,7 +342,6 @@ window.adminSetToken = (id, status) => {
 window.adminToggleTokenStatus = (action) => {
     if (!isAdmin) return;
     
-    // 1. Find the oldest unclaimed token to remove
     if (action === 'remove') {
         ref.orderByChild('token').equalTo(true).once('value', snapshot => {
             let targetKey = null;
@@ -372,7 +363,6 @@ window.adminToggleTokenStatus = (action) => {
             }
         });
     
-    // 2. Add a new token (Simulate a new 5-star rating post)
     } else if (action === 'add') {
         ref.push({
             name: "ADMIN ADDED TOKEN",
@@ -422,7 +412,7 @@ tinxClaimBtn.onclick = () => {
                 tinxStatus.textContent = `SUCCESS! Claimed ${TOKEN_BUNDLE_SIZE} tokens.`;
                 tinxStatus.style.color = "#00ff00";
                 tinxPass.value = '';
-                potatoExplosion(); // 🥔 3-SECOND POTATO EXPLOSION ON SUCCESS
+                potatoExplosion(); 
                 render();
             }).catch(error => {
                 tinxStatus.textContent = "Error claiming bundle: " + error.message;
@@ -440,7 +430,6 @@ function potatoExplosion(){
   const f=document.createElement("div");
   f.className="potato-explosion";
   document.body.appendChild(f);
-  // Remove after 3 seconds, as requested
   setTimeout(()=>f.remove(), 3000); 
 }
 
@@ -457,7 +446,7 @@ saveBtn.onclick=()=>{
     claimed: s===5 ? false : null,
     time:Date.now()
   });
-  if(s===5) potatoExplosion(); // 🥔 ALSO EXPLODES ON NEW 5-STAR RATING
+  if(s===5) potatoExplosion(); 
   name.value="";review.value="";
 };
 
@@ -474,65 +463,62 @@ window.editRating=(id,r)=>{
   ref.child(id).update({name:n,character:c,stars:s,pp:p,review:rev});
 };
 
-// --- TOKEN VISUALS ---
+// --- TOKEN VISUALS (Reworked for Stacking Pile) ---
 function renderTokenIcon(isClaimed, isBundle) {
-    if (isClaimed) {
-        // Claimed Bundle (used up)
-        return `<span class="token-icon token-bundle token-bundle-claimed" title="Claimed Bundle"><i class="fas fa-box-open"></i></span>`;
-    }
     if (isBundle) {
-        // Unclaimed Full Bundle (ready to cash in)
-        return `<span class="token-icon token-bundle" title="Unclaimed Bundle"><i class="fas fa-sack-dollar"></i></span>`;
+        // Ticket/Sack/Bundle icon
+        const iconClass = isClaimed ? 'fa-box-open token-bundle-claimed' : 'fa-sack-dollar';
+        const title = isClaimed ? 'Claimed Bundle' : 'Full Ticket (5 Potatoes)';
+        return `<span class="token-bundle-icon ${isClaimed ? 'token-bundle-claimed' : ''}" title="${title}"><i class="fas ${iconClass}"></i></span>`;
     }
-    // Individual Token (Potato)
+    // Individual Potato Icon (fa-gem used for shape)
     return `
-        <span class="token-icon token-individual" title="Individual Token">
-            <i class="fas fa-circle token-base"></i>
-            <i class="fas fa-star token-powder"></i>
+        <span class="token-pile-item" title="Individual Potato">
+            <i class="fas fa-gem"></i>
         </span>
     `;
 }
 
 function updateTokenDisplay(unclaimedCount, claimedCount) {
-    const sackIconsElement = document.getElementById('sackIcons');
-    sackIconsElement.innerHTML = '';
+    const individualPileElement = document.getElementById('individualTokenPile');
+    const bundleDisplayElement = document.getElementById('bundleDisplay');
     
-    const currentSacks = unclaimedCount % TOKEN_BUNDLE_SIZE;
+    individualPileElement.innerHTML = '';
+    bundleDisplayElement.innerHTML = '';
     
-    let bundlesRendered = 0;
-
-    for (let i = 0; i < claimedCount; i++) {
-        sackIconsElement.innerHTML += renderTokenIcon(true, true);
-        bundlesRendered++;
-    }
-
-    for (let i = 0; i < Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE); i++) {
-        sackIconsElement.innerHTML += renderTokenIcon(false, true);
-        bundlesRendered++;
-    }
+    // 1. Calculate and display the current individual potato count
+    const currentPotatoes = unclaimedCount % TOKEN_BUNDLE_SIZE;
     
-    if (bundlesRendered > 0 && currentSacks > 0) {
-        const separator = document.createElement('span');
-        separator.textContent = ' | ';
-        separator.style.fontSize = '1em';
-        sackIconsElement.appendChild(separator);
-    }
-
-    for (let i = 0; i < currentSacks; i++) {
-        sackIconsElement.innerHTML += renderTokenIcon(false, false);
-    }
-
-    if (unclaimedCount === 0 && claimedCount === 0) {
-        sackIconsElement.textContent = 'No tokens banked (0/5).';
-        sackIconsElement.style.fontSize = '1em';
+    if (currentPotatoes === 0 && (unclaimedCount > 0 || claimedCount > 0)) {
+        individualPileElement.textContent = 'Ready for a new pile...';
+    } else if (unclaimedCount === 0 && claimedCount === 0) {
+        individualPileElement.textContent = 'No tokens banked.';
     } else {
-        sackIconsElement.style.fontSize = '1.8em';
-        // Add a count after the icons
-        const count = document.createElement('span');
-        count.textContent = ` (${currentSacks}/${TOKEN_BUNDLE_SIZE})`;
-        count.style.fontSize = '0.5em';
-        count.style.color = '#ff9900';
-        sackIconsElement.appendChild(count);
+        for (let i = 0; i < currentPotatoes; i++) {
+            individualPileElement.innerHTML += renderTokenIcon(false, false);
+        }
+        // Add the current count underneath the pile
+        const countText = document.createElement('span');
+        countText.style.fontSize = '0.5em';
+        countText.textContent = ` (${currentPotatoes}/${TOKEN_BUNDLE_SIZE})`;
+        individualPileElement.appendChild(countText);
+    }
+
+    // 2. Display the bundles (Tickets/Sacks)
+    const totalBundles = Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE) + claimedCount;
+    if (totalBundles === 0 && currentPotatoes === 0) {
+        bundleDisplayElement.innerHTML = 'Bundles: 0';
+    } else {
+        let bundlesHTML = 'Bundles: ';
+        // Render unclaimed bundles (Tickets)
+        for (let i = 0; i < Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE); i++) {
+            bundlesHTML += renderTokenIcon(false, true);
+        }
+        // Render claimed bundles (Used Tickets)
+        for (let i = 0; i < claimedCount; i++) {
+            bundlesHTML += renderTokenIcon(true, true);
+        }
+        bundleDisplayElement.innerHTML = bundlesHTML;
     }
 }
 
@@ -548,7 +534,6 @@ function render(){
     snap.forEach(c => {
         const r = c.val();
         
-        // COUNT TOKENS
         if (r.token) {
             if (r.claimed) {
                 claimedTokenCount++;
@@ -567,8 +552,8 @@ function render(){
 
         // Toggles for admin
         const tokenToggleBtn = r.token 
-            ? `<button onclick="adminSetToken('${c.key}', false)">Remove Token</button>` 
-            : `<button onclick="adminSetToken('${c.key}', true)">Add Token</button>`;
+            ? `<button onclick="adminSetToken('${c.key}', false)"><i class="fas fa-minus"></i> Remove Token</button>` 
+            : `<button onclick="adminSetToken('${c.key}', true)"><i class="fas fa-plus"></i> Add Token</button>`;
         
         d.innerHTML=`
             <b>${r.name}</b> (${r.character}) ${tokenStatus}<br>
