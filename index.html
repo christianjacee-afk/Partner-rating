@@ -152,42 +152,44 @@ button{
   100% { transform: rotate(-0deg); }
 }
 
-/* --- TOKEN SYSTEM STYLES (Potato Pile Themed) --- */
+/* --- TOKEN SYSTEM STYLES (French Fry Themed) --- */
 #tokenDisplay {
     margin-top: 50px;
     padding: 20px 0;
-    border-top: 2px solid #ff9900;
+    border-top: 2px solid #ffb300; /* Golden Fry Color */
     text-align: center;
-    color: #ff9900;
+    color: #ffb300;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end; /* Align elements to the bottom */
+    align-items: flex-end;
 }
 #individualTokenPile {
+    /* INCREASED SIZE HERE: */
     display: flex;
     align-items: flex-end;
-    font-size: 3em; /* Base size for the pile */
-    min-width: 250px; /* Reserve space for the pile */
+    font-size: 5em; /* MUCH BIGGER BASE SIZE for the pile */
+    min-width: 350px; 
 }
 #bundleDisplay {
-    font-size: 1.5em;
+    font-size: 1.8em; /* Slightly larger bundle display */
     text-align: right;
     border-left: 2px solid #444;
     padding-left: 15px;
     min-width: 150px;
 }
 .token-pile-item {
-    font-size: 1.2em;
-    color: #8B4513; /* Earthy brown for the potato/gem */
+    font-size: 1em; /* Relative to the 5em pile size */
+    color: #ffc200; /* Golden fry color */
     position: relative;
     /* Styles to create the stacking effect */
-    margin-right: -10px; /* Overlap them */
-    margin-bottom: -10px; /* Overlap vertically */
+    margin-right: -10px; 
+    margin-bottom: -15px; 
     filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
+    transform: rotate(90deg); /* Rotate the bars to look like fries */
 }
 .token-bundle-icon {
     font-size: 2.5em;
-    color: #ff9900;
+    color: #ffb300;
     margin-left: 10px;
 }
 .token-bundle-claimed {
@@ -321,11 +323,9 @@ window.adminSetToken = (id, status) => {
     updates.claimed = status ? false : null; 
     updates.stars = status ? 5 : 4; 
 
-    // Fetch the current rating to keep existing non-token stars if removing
     ref.child(id).once('value', snapshot => {
         const currentRating = snapshot.val();
         if (!status && currentRating.stars !== 5) {
-             // If removing token and it wasn't a 5-star originally, revert stars
              updates.stars = currentRating.stars; 
         }
 
@@ -463,18 +463,18 @@ window.editRating=(id,r)=>{
   ref.child(id).update({name:n,character:c,stars:s,pp:p,review:rev});
 };
 
-// --- TOKEN VISUALS (Reworked for Stacking Pile) ---
+// --- TOKEN VISUALS (Reworked for French Fry Stacking Pile) ---
 function renderTokenIcon(isClaimed, isBundle) {
     if (isBundle) {
         // Ticket/Sack/Bundle icon
         const iconClass = isClaimed ? 'fa-box-open token-bundle-claimed' : 'fa-sack-dollar';
-        const title = isClaimed ? 'Claimed Bundle' : 'Full Ticket (5 Potatoes)';
+        const title = isClaimed ? 'Claimed Ticket' : 'Full Ticket (5 Fries)';
         return `<span class="token-bundle-icon ${isClaimed ? 'token-bundle-claimed' : ''}" title="${title}"><i class="fas ${iconClass}"></i></span>`;
     }
-    // Individual Potato Icon (fa-gem used for shape)
+    // Individual Fry Icon (fa-bars rotated)
     return `
-        <span class="token-pile-item" title="Individual Potato">
-            <i class="fas fa-gem"></i>
+        <span class="token-pile-item" title="Individual Fry Token">
+            <i class="fas fa-bars"></i>
         </span>
     `;
 }
@@ -486,30 +486,34 @@ function updateTokenDisplay(unclaimedCount, claimedCount) {
     individualPileElement.innerHTML = '';
     bundleDisplayElement.innerHTML = '';
     
-    // 1. Calculate and display the current individual potato count
-    const currentPotatoes = unclaimedCount % TOKEN_BUNDLE_SIZE;
+    // 1. Calculate and display the current individual potato count (fries)
+    const currentFries = unclaimedCount % TOKEN_BUNDLE_SIZE;
     
-    if (currentPotatoes === 0 && (unclaimedCount > 0 || claimedCount > 0)) {
+    if (currentFries === 0 && (unclaimedCount > 0 || claimedCount > 0)) {
         individualPileElement.textContent = 'Ready for a new pile...';
+        individualPileElement.style.fontSize = '1.2em';
     } else if (unclaimedCount === 0 && claimedCount === 0) {
         individualPileElement.textContent = 'No tokens banked.';
+        individualPileElement.style.fontSize = '1.2em';
     } else {
-        for (let i = 0; i < currentPotatoes; i++) {
+        individualPileElement.style.fontSize = '5em'; // Set the large size back
+        for (let i = 0; i < currentFries; i++) {
             individualPileElement.innerHTML += renderTokenIcon(false, false);
         }
         // Add the current count underneath the pile
         const countText = document.createElement('span');
-        countText.style.fontSize = '0.5em';
-        countText.textContent = ` (${currentPotatoes}/${TOKEN_BUNDLE_SIZE})`;
+        countText.style.fontSize = '0.25em'; // Quarter the size of the 5em pile
+        countText.textContent = ` (${currentFries}/${TOKEN_BUNDLE_SIZE})`;
+        countText.style.color = '#ffb300';
         individualPileElement.appendChild(countText);
     }
 
     // 2. Display the bundles (Tickets/Sacks)
     const totalBundles = Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE) + claimedCount;
-    if (totalBundles === 0 && currentPotatoes === 0) {
+    if (totalBundles === 0 && currentFries === 0) {
         bundleDisplayElement.innerHTML = 'Bundles: 0';
     } else {
-        let bundlesHTML = 'Bundles: ';
+        let bundlesHTML = '<div style="margin-bottom: 5px;">Bundles:</div>';
         // Render unclaimed bundles (Tickets)
         for (let i = 0; i < Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE); i++) {
             bundlesHTML += renderTokenIcon(false, true);
@@ -547,7 +551,7 @@ function render(){
         d.className="rating";
         
         const tokenStatus = r.token 
-            ? `<span style="color:${r.claimed?'#555':'#ff9900'}; font-weight:bold; margin-left: 10px;">🥔 Token: ${r.claimed?"CLAIMED":"UNCLAIMED"}</span>`
+            ? `<span style="color:${r.claimed?'#555':'#ffb300'}; font-weight:bold; margin-left: 10px;">🍟 Token: ${r.claimed?"CLAIMED":"UNCLAIMED"}</span>`
             : '';
 
         // Toggles for admin
