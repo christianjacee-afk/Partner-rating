@@ -1,212 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Partner Ratings ❤️</title>
-
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f7f7f7;
-  padding: 20px;
-}
-.container {
-  max-width: 420px;
-  margin: auto;
-  background: white;
-  padding: 20px;
-  border-radius: 14px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-h1, h3 {
-  text-align: center;
-}
-select, input, textarea, button {
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-button {
-  background: #ff5c8a;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-button:hover {
-  background: #e14b75;
-}
-.entry {
-  background: #f1f1f1;
-  padding: 10px;
-  border-radius: 8px;
-  margin-top: 10px;
-}
-.small {
-  font-size: 12px;
-  color: #666;
-}
-</style>
+  <meta charset="UTF-8">
+  <title>TiffanyTinx Ratings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #eee;
+      padding: 20px;
+    }
+    h1 {
+      font-family: 'Metal Mania', cursive;
+      font-size: 3em;
+      text-align: center;
+      color: #ff0000;
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background-color: #ff0000;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .rating-list {
+      margin-top: 30px;
+      border-top: 1px solid #444;
+      padding-top: 20px;
+    }
+    .rating-item {
+      background-color: #222;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    .rating-item span {
+      font-weight: bold;
+      color: #ffcc00;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
-  <h1>Partner Ratings ❤️</h1>
+  <h1>TiffanyTinx</h1>
 
-  <!-- ANNIVERSARY -->
-  <h3>🎉 Anniversary</h3>
-  <input type="date" id="anniversaryDate">
-  <button onclick="saveAnniversary()">Save Anniversary</button>
-  <div id="anniversaryDisplay"></div>
+  <div>
+    <label for="period">Period:</label>
+    <select id="period">
+      <option value="daily">Daily</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+    </select>
 
-  <hr>
+    <label for="rating">Rating (1-10):</label>
+    <input type="number" id="rating" min="1" max="10">
 
-  <!-- RATING FORM -->
-  <select id="tone">
-    <option value="😂 Funny">😂 Funny</option>
-    <option value="❤️ Sweet">❤️ Sweet</option>
-    <option value="😈 Savage">😈 Savage</option>
-  </select>
+    <label for="addon">Add-on (Sweet / Savage / Funny):</label>
+    <select id="addon">
+      <option value="None">None</option>
+      <option value="Sweet">Sweet</option>
+      <option value="Savage">Savage</option>
+      <option value="Funny">Funny</option>
+    </select>
 
-  <select id="period">
-    <option value="Daily">Daily</option>
-    <option value="Weekly">Weekly</option>
-    <option value="Monthly">Monthly</option>
-  </select>
+    <label for="review">Review:</label>
+    <textarea id="review" rows="3" placeholder="Leave a comment..."></textarea>
 
-  <input type="number" id="rating" min="1" max="10" placeholder="Rating (1–10)">
-  <textarea id="review" placeholder="Leave a review..."></textarea>
+    <button id="saveBtn">Save Rating</button>
+    <button id="clearBtn">Clear All</button>
+  </div>
 
-  <button onclick="submitReview()">Save Rating</button>
+  <div class="rating-list" id="ratingList">
+    <h2>Saved Ratings:</h2>
+  </div>
 
-  <hr>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <!-- HISTORY -->
-  <h3>📜 History</h3>
-  <div id="history"></div>
+  <script>
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
+      authDomain: "tiffanytinx-bbf9c.firebaseapp.com",
+      databaseURL: "https://tiffanytinx-bbf9c-default-rtdb.firebaseio.com",
+      projectId: "tiffanytinx-bbf9c",
+      storageBucket: "tiffanytinx-bbf9c.firebasestorage.app",
+      messagingSenderId: "300543672766",
+      appId: "1:300543672766:web:cae10d6758efee7f9ff9ef",
+      measurementId: "G-Q6WTK15T2K"
+    };
 
-  <!-- TOP COMPLAINTS -->
-  <h3>😈 Top Complaints</h3>
-  <div id="complaints"></div>
-</div>
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const ratingsRef = database.ref('ratings');
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    // Save rating
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      const period = document.getElementById('period').value;
+      const rating = document.getElementById('rating').value;
+      const addon = document.getElementById('addon').value;
+      const review = document.getElementById('review').value;
 
-<script>
-// 🔥 FIREBASE CONFIG (YOU WILL REPLACE THIS)
+      if (!rating) {
+        alert("Please enter a rating!");
+        return;
+      }
 
-onst firebaseConfig = {
-  apiKey: "AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
-  authDomain: "tiffanytinx-bbf9c.firebaseapp.com",
-  databaseURL: "https://tiffanytinx-bbf9c-default-rtdb.firebaseio.com",
-  projectId: "tiffanytinx-bbf9c",
-  storageBucket: "tiffanytinx-bbf9c.firebasestorage.app",
-  messagingSenderId: "300543672766",
-  appId: "1:300543672766:web:cae10d6758efee7f9ff9ef",
-  measurementId: "G-Q6WTK15T2K"
-};
+      const newRating = {
+        period,
+        rating,
+        addon,
+        review,
+        timestamp: Date.now()
+      };
 
-
-
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const reviewsRef = database.ref("reviews");
-const annRef = database.ref("anniversary");
-
-// SUBMIT REVIEW
-function submitReview() {
-  const tone = document.getElementById("tone").value;
-  const period = document.getElementById("period").value;
-  const rating = document.getElementById("rating").value;
-  const review = document.getElementById("review").value;
-
-  if (!rating) {
-    alert("Give a rating first 😅");
-    return;
-  }
-
-  reviewsRef.push({
-    tone,
-    period,
-    rating,
-    review,
-    time: new Date().toLocaleString()
-  });
-
-  document.getElementById("rating").value = "";
-  document.getElementById("review").value = "";
-}
-
-// LOAD HISTORY + COMPLAINTS
-reviewsRef.on("value", snapshot => {
-  const history = document.getElementById("history");
-  const complaintsBox = document.getElementById("complaints");
-
-  history.innerHTML = "";
-  complaintsBox.innerHTML = "";
-
-  const wordCount = {};
-
-  snapshot.forEach(child => {
-    const data = child.val();
-
-    history.innerHTML += `
-      <div class="entry">
-        <strong>${data.period}</strong> — ${data.rating}/10 ${data.tone}
-        <div>${data.review || ""}</div>
-        <div class="small">${data.time}</div>
-      </div>
-    `;
-
-    if (data.review) {
-      data.review.toLowerCase().split(/\s+/).forEach(word => {
-        if (word.length > 4) {
-          wordCount[word] = (wordCount[word] || 0) + 1;
+      ratingsRef.push(newRating, (error) => {
+        if (error) {
+          alert("Error saving rating: " + error);
+        } else {
+          displayRatings();
+          document.getElementById('rating').value = '';
+          document.getElementById('addon').value = 'None';
+          document.getElementById('review').value = '';
         }
       });
-    }
-  });
-
-  Object.entries(wordCount)
-    .sort((a,b) => b[1] - a[1])
-    .slice(0,5)
-    .forEach(([word, count]) => {
-      complaintsBox.innerHTML += `<div>${word} (${count})</div>`;
     });
-});
 
-// ANNIVERSARY
-function saveAnniversary() {
-  const date = document.getElementById("anniversaryDate").value;
-  annRef.set(date);
-}
+    // Display ratings
+    function displayRatings() {
+      ratingsRef.once('value', snapshot => {
+        const ratingList = document.getElementById('ratingList');
+        ratingList.innerHTML = '<h2>Saved Ratings:</h2>';
+        snapshot.forEach(child => {
+          const data = child.val();
+          const div = document.createElement('div');
+          div.className = 'rating-item';
+          div.innerHTML = `
+            <span>${data.period}:</span> Rating: ${data.rating} ${data.addon !== 'None' ? ' | ' + data.addon : ''}<br>
+            ${data.review ? 'Comment: ' + data.review : ''}
+          `;
+          ratingList.appendChild(div);
+        });
+      });
+    }
 
-annRef.on("value", snap => {
-  if (!snap.exists()) return;
+    // Clear all ratings
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      if (confirm("Are you sure you want to clear all ratings?")) {
+        ratingsRef.remove().then(() => displayRatings());
+      }
+    });
 
-  const annDate = new Date(snap.val());
-  const today = new Date();
-  annDate.setFullYear(today.getFullYear());
-
-  const diff = Math.ceil((annDate - today) / (1000 * 60 * 60 * 24));
-  const display = document.getElementById("anniversaryDisplay");
-
-  if (diff === 0) {
-    display.innerHTML = "🎊 HAPPY ANNIVERSARY 🎊";
-  } else if (diff > 0) {
-    display.innerHTML = `${diff} days until anniversary 💕`;
-  } else {
-    annDate.setFullYear(today.getFullYear() + 1);
-    const nextDiff = Math.ceil((annDate - today) / (1000 * 60 * 60 * 24));
-    display.innerHTML = `${nextDiff} days until anniversary 💕`;
-  }
-});
-</script>
+    // Load ratings on page load
+    displayRatings();
+  </script>
 
 </body>
 </html>
