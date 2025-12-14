@@ -14,6 +14,7 @@
             font-family: 'Cinzel', serif;
             padding: 20px;
             min-height: 100vh;
+            padding-bottom: 100px; /* Space for the fixed controls */
         }
         h1 {
             font-family: 'Metal Mania', cursive;
@@ -40,13 +41,11 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-
-            /* Traditional Border Styling */
             border: 5px solid #000;
             border-image: linear-gradient(
                 to bottom right, 
                 #000, #ff0000, #ffcc00, #ff0000, #000
-            ) 1; /* Black, Red, Gold, Red, Black */
+            ) 1;
             padding: 20px 30px 40px 30px;
             position: relative;
         }
@@ -95,11 +94,11 @@
             margin-bottom: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
-            border: 1px solid #444; /* Subtle dark border */
+            border: 1px solid #444;
         }
         .rating-item .name {
             font-weight: bold;
-            color: #ffcc00; /* Gold */
+            color: #ffcc00;
             font-size: 1.2em;
         }
         .stars {
@@ -108,12 +107,12 @@
             margin-right: 15px;
         }
         .character-rating {
-            color: #ff00ff; /* A new color for the character rating */
+            color: #ff00ff;
             font-weight: bold;
             margin-right: 15px;
         }
         .pp-energy {
-            color: #00ccff; /* Blue for PP Energy */
+            color: #00ccff;
             font-weight: bold;
         }
         .delete-btn {
@@ -143,7 +142,7 @@
             right: 20px;
         }
         #tinxToggle {
-            right: 80px; /* Moved next to admin toggle */
+            right: 80px;
             font-size: 1.2em;
             background-color: #fff;
             color: #000;
@@ -169,28 +168,54 @@
             right: 80px;
         }
 
-        /* Token Display */
+        /* TOKEN DISPLAY STYLES (New Location and Size) */
         #tokenDisplay {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #000000;
-            border: 2px solid #ffcc00;
-            color: #ffcc00;
+            margin-top: 50px;
+            padding: 20px 0;
+            border-top: 2px solid #ffcc00;
             text-align: center;
-            font-size: 1.5em;
-            border-radius: 5px;
+            font-size: 1.8em; /* Make the icons bigger */
+            color: #ffcc00;
         }
-        .sack-icon {
-            font-size: 1.2em;
-            margin: 0 3px;
+        .token-icon {
+            margin: 0 5px;
             display: inline-block;
         }
-        .sack-full {
-            color: #fff; /* White sack */
+        /* Individual Token (Small Tally Mark) */
+        .token-individual {
+            font-size: 1.1em;
+            color: #ccc;
+            position: relative;
+            padding: 0 5px;
         }
-        .sack-empty {
-            color: #444; /* Gray empty sack */
+        .token-individual .fa-bag-shopping {
+            color: #666; /* Darker to look like a plastic bag */
+            font-size: 1.5em;
         }
+        .token-individual .fa-circle {
+            color: #fff; /* White powder */
+            font-size: 0.6em;
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        /* Claimed Bundle (Large Icon) */
+        .token-bundle {
+            font-size: 2.5em; /* Significantly larger */
+            color: #ffcc00;
+            margin: 0 15px;
+            border-right: 2px solid #444; /* Visual grouping separator */
+            padding-right: 15px;
+        }
+        .token-bundle:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+        .token-bundle-claimed {
+            color: #444; /* Gray out claimed bundle */
+        }
+
     </style>
 </head>
 <body>
@@ -244,12 +269,12 @@
             <button id="saveBtn"><i class="fas fa-save"></i> Save Rating</button>
         </div>
 
-        <div id="tokenDisplay">
-            **Banked Tokens:** <span id="sackIcons"></span>
-        </div>
-
         <div class="rating-list" id="ratingList">
             <h2><i class="fas fa-scroll"></i> The Vault of Reviews:</h2>
+        </div>
+
+        <div id="tokenDisplay">
+            <span id="sackIcons"></span>
         </div>
 
     </div>
@@ -390,9 +415,9 @@
         });
 
 
-        // --- INTERACTION HANDLERS ---
+        // --- INTERACTION HANDLERS (Save, Delete, Vote) ---
 
-        // Save Rating
+        // Save Rating (5-star reviews create tokens)
         document.getElementById('saveBtn').addEventListener('click', () => {
             const name = document.getElementById('name').value.trim() || "Anonymous";
             const characterRating = document.getElementById('characterRating').value;
@@ -411,7 +436,6 @@
                 likes: 0,
                 dislikes: 0,
                 timestamp: Date.now(),
-                // Token logic: a 5-star review becomes a bankable token (isToken: true, claimed: false)
                 isToken: isFiveStar,
                 claimed: isFiveStar ? false : undefined
             };
@@ -430,7 +454,7 @@
             });
         });
 
-        // Delete Handler (No changes here)
+        // Delete Handler (No changes)
         window.deleteRating = (id) => {
             if (!isAdminLoggedIn) {
                 alert("You must log in as admin to delete reviews.");
@@ -443,7 +467,7 @@
             }
         };
 
-        // Like/Dislike Handler (No changes here)
+        // Like/Dislike Handler (No changes)
         window.updateVote = (id, type) => {
             const ref = database.ref('ratings/' + id);
             ref.transaction((currentData) => {
@@ -464,49 +488,66 @@
             });
         };
 
-        // --- DISPLAY LOGIC ---
+        // --- TOKEN VISUALS (Reworked to Tally System) ---
+        function renderTokenIcon(isClaimed, isBundle) {
+            // Icon for a claimed bundle (empty)
+            if (isClaimed) {
+                return `<span class="token-icon token-bundle token-bundle-claimed"><i class="fas fa-box-open"></i></span>`;
+            }
+            // Icon for a full bundle (unclaimed)
+            if (isBundle) {
+                return `<span class="token-icon token-bundle"><i class="fas fa-gift"></i></span>`; // Using gift for a large, completed bundle
+            }
+            // Icon for an individual token (plastic bag w/ white powder)
+            return `
+                <span class="token-icon token-individual">
+                    <i class="fas fa-bag-shopping"></i>
+                    <i class="fas fa-circle"></i>
+                </span>
+            `;
+        }
+
         function updateTokenDisplay(unclaimedCount, claimedCount) {
             const sackIconsElement = document.getElementById('sackIcons');
             sackIconsElement.innerHTML = '';
             
-            // Calculate how many full bundles (claimed) and how many current sacks (unclaimed)
-            const totalBundles = claimedCount + Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE);
+            // Calculate how many completed bundles (claimed + unclaimed full sets)
+            const totalBundles = Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE) + claimedCount;
             const currentSacks = unclaimedCount % TOKEN_BUNDLE_SIZE;
             
-            // 1. Display Claimed/Empty Bundles
-            for (let i = 0; i < totalBundles; i++) {
-                // Using a similar icon for an empty sack/claimed bundle
-                const emptySack = document.createElement('span');
-                emptySack.className = 'sack-icon sack-empty';
-                emptySack.innerHTML = '<i class="fas fa-box-open"></i>'; // Changed to box open for bundle
-                sackIconsElement.appendChild(emptySack);
+            // 1. Display All Completed Bundles (Claimed or Unclaimed Full Sets)
+            let bundlesRendered = 0;
+
+            // Render claimed bundles first (empty boxes)
+            for (let i = 0; i < claimedCount; i++) {
+                sackIconsElement.innerHTML += renderTokenIcon(true, true); // true, true = claimed bundle
+                bundlesRendered++;
             }
 
-            // 2. Display Unclaimed Sacks (Current Bundle Progress)
-            if (unclaimedCount > 0) {
-                if (totalBundles > 0) {
-                    // Add a separator for the current, active bundle
-                    const separator = document.createElement('span');
-                    separator.textContent = ' | ';
-                    sackIconsElement.appendChild(separator);
-                }
-                
-                for (let i = 0; i < TOKEN_BUNDLE_SIZE; i++) {
-                    const sack = document.createElement('span');
-                    sack.className = 'sack-icon';
-                    if (i < currentSacks) {
-                        // Full Sack Icon (using the bag icon)
-                        sack.innerHTML = '<i class="fas fa-shopping-bag"></i>';
-                        sack.classList.add('sack-full');
-                    } else {
-                        // Empty Slot Icon (using a light outline to show the slot)
-                        sack.innerHTML = '<i class="far fa-circle"></i>'; 
-                        sack.classList.add('sack-empty');
-                    }
-                    sackIconsElement.appendChild(sack);
-                }
-            } else if (totalBundles === 0) {
-                sackIconsElement.textContent = 'None';
+            // Render current full bundles (unclaimed full sets)
+            for (let i = 0; i < Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE); i++) {
+                sackIconsElement.innerHTML += renderTokenIcon(false, true); // false, true = unclaimed full bundle
+                bundlesRendered++;
+            }
+            
+            // 2. Display Separator if there are both bundles and current sacks
+            if (bundlesRendered > 0 && currentSacks > 0) {
+                const separator = document.createElement('span');
+                separator.textContent = ' | ';
+                sackIconsElement.appendChild(separator);
+            }
+
+            // 3. Display Individual Tokens (Tally Marks)
+            for (let i = 0; i < currentSacks; i++) {
+                sackIconsElement.innerHTML += renderTokenIcon(false, false); // false, false = individual token
+            }
+
+            // Fallback for an empty bank
+            if (unclaimedCount === 0 && claimedCount === 0) {
+                sackIconsElement.textContent = 'No tokens banked.';
+                sackIconsElement.style.fontSize = '1em';
+            } else {
+                sackIconsElement.style.fontSize = '1.8em';
             }
         }
 
@@ -550,7 +591,7 @@
                     const tokenStatus = data.isToken 
                         ? (data.claimed 
                             ? `<span style="color: #444; font-size: 0.9em; margin-left: 10px;">Token: Claimed <i class="fas fa-box-open"></i></span>`
-                            : `<span style="color: #fff; font-size: 0.9em; margin-left: 10px;">Token: Banked <i class="fas fa-shopping-bag"></i></span>`
+                            : `<span style="color: #fff; font-size: 0.9em; margin-left: 10px;">Token: Banked <i class="fas fa-bag-shopping"></i></span>`
                           )
                         : '';
 
