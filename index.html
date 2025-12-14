@@ -1,637 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>TiffanyTinx Ratings - The Vault</title>
-    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        /* General Styles for a Dark, Dramatic Look */
-        body {
-            /* Background Pattern (Subtle Dark Texture) */
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a0a0a"/><path fill="%231a1a1a" d="M0 0h50v50H0zM50 50h50v50H50z"/><path fill="%232a0000" opacity="0.1" d="M25 0h50v25H25zM0 25h25v50H0zM75 25h25v50H75zM25 75h50v25H25z"/></svg>') repeat;
-            color: #eee;
-            font-family: 'Cinzel', serif;
-            padding: 20px;
-            min-height: 100vh;
-            padding-bottom: 100px; /* Space for the fixed controls */
-        }
-        h1 {
-            font-family: 'Metal Mania', cursive;
-            font-size: 6em;
-            text-align: center;
-            color: #ff0000;
-            text-shadow:
-                4px 4px #000,
-                8px 8px #550000,
-                12px 12px #aa0000;
-            margin-bottom: 40px;
-            letter-spacing: 5px;
-            animation: pulse 5s infinite alternate;
-        }
-        @keyframes pulse {
-            from { text-shadow: 4px 4px #000; }
-            to { text-shadow: 6px 6px #000; }
-        }
-        /* American Traditional Style Border */
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #151515;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-            border: 5px solid #000;
-            border-image: linear-gradient(
-                to bottom right, 
-                #000, #ff0000, #ffcc00, #ff0000, #000
-            ) 1;
-            padding: 20px 30px 40px 30px;
-            position: relative;
-        }
-        label {
-            display: block;
-            margin: 15px 0 5px;
-            font-weight: bold;
-            color: #ffaaaa;
-            text-transform: uppercase;
-        }
-        input[type="text"], input[type="password"], select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            border: 2px solid #ff0000;
-            background-color: #2a2a2a;
-            color: #eee;
-            font-size: 1em;
-            box-shadow: inset 0 0 5px rgba(255, 0, 0, 0.5);
-        }
-        button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            background-color: #ff0000;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            margin-right: 10px;
-            font-size: 1em;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #aa0000;
-        }
-        /* Rating List Styling */
-        .rating-list {
-            margin-top: 50px;
-            border-top: 2px solid #550000;
-            padding-top: 20px;
-        }
-        .rating-item {
-            background-color: #222;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
-            border: 1px solid #444;
-        }
-        .rating-item .name {
-            font-weight: bold;
-            color: #ffcc00;
-            font-size: 1.2em;
-        }
-        .stars {
-            color: gold;
-            font-size: 1.5em;
-            margin-right: 15px;
-        }
-        .character-rating {
-            color: #ff00ff;
-            font-weight: bold;
-            margin-right: 15px;
-        }
-        .pp-energy {
-            color: #00ccff;
-            font-weight: bold;
-        }
-        .delete-btn {
-            background-color: #000;
-            color: #ff0000;
-            border: 2px solid #ff0000;
-            padding: 5px 10px;
-            font-size: 0.9em;
-        }
-        /* Discreet Login Styles */
-        .secret-toggle {
-            position: fixed;
-            bottom: 20px;
-            background-color: #ff0000;
-            color: #fff;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 1.5em;
-            line-height: 50px;
-            text-align: center;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            z-index: 100;
-        }
-        #adminToggle {
-            right: 20px;
-        }
-        #tinxToggle {
-            right: 80px;
-            font-size: 1.2em;
-            background-color: #fff;
-            color: #000;
-            line-height: 40px;
-            padding-top: 5px;
-        }
-        .secret-controls {
-            position: fixed;
-            bottom: 80px;
-            padding: 15px;
-            background-color: #330000;
-            border: 3px solid #000;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-            border-radius: 5px;
-            width: 250px;
-            display: none;
-            z-index: 99;
-        }
-        #adminControls {
-            right: 20px;
-        }
-        #tinxControls {
-            right: 80px;
-        }
+<meta charset="UTF-8">
+<title>TiffanyTinx Ratings</title>
 
-        /* TOKEN DISPLAY STYLES (Bottom of page, custom icons) */
-        #tokenDisplay {
-            margin-top: 50px;
-            padding: 20px 0;
-            border-top: 2px solid #ffcc00;
-            text-align: center;
-            font-size: 1.8em;
-            color: #ffcc00;
-        }
-        .token-icon {
-            margin: 0 8px;
-            display: inline-block;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        /* INDIVIDUAL TOKEN (Plastic Bag with Powder) */
-        .token-individual {
-            font-size: 1em;
-            color: #ccc;
-            position: relative;
-            padding: 0 5px;
-        }
-        .token-individual .token-base {
-            /* Base icon: Shopping Bag for a sack/bag look */
-            color: #666; /* Darker grey for the plastic bag itself */
-            font-size: 1.6em;
-        }
-        .token-individual .token-powder {
-            /* White powder circle layered on top */
-            color: #fff; 
-            font-size: 0.6em;
-            position: absolute;
-            top: 10px; /* Adjusted to sit lower inside the bag */
-            left: 50%;
-            transform: translateX(-50%);
-            /* Subtle shadow to look like powder inside a bag */
-            text-shadow: 0 0 2px rgba(0, 0, 0, 0.5); 
-        }
+<style>
+body {
+  background:#0a0a0a;
+  color:#eee;
+  font-family:'Cinzel', serif;
+  padding:20px;
+}
 
-        /* CLAIMED BUNDLE (Large Icon) */
-        .token-bundle {
-            font-size: 2.5em;
-            color: #ffcc00;
-            margin: 0 15px;
-            border-right: 2px solid #444;
-            padding-right: 15px;
-        }
-        .token-bundle:last-child {
-            border-right: none;
-            padding-right: 0;
-        }
-        .token-bundle-claimed {
-            color: #444;
-        }
+.container {
+  max-width:800px;
+  margin:auto;
+  background:#151515;
+  padding:30px;
+  border-radius:12px;
+  border:4px solid #ff0000;
+  box-shadow:0 0 25px rgba(255,0,0,.5);
+}
 
-    </style>
+h1 {
+  font-family:'Metal Mania', cursive;
+  text-align:center;
+  font-size:4em;
+  color:#ff0000;
+  margin-bottom:30px;
+}
+
+label {
+  display:block;
+  margin-top:15px;
+  margin-bottom:5px;
+  color:#ffaaaa;
+}
+
+input, select, textarea {
+  width:100%;
+  padding:10px;
+  background:#222;
+  border:2px solid #ff0000;
+  color:#fff;
+  border-radius:6px;
+}
+
+/* 🔥 SAVE BUTTON */
+#saveBtn {
+  margin-top:20px;
+  width:100%;
+  padding:15px;
+  font-size:1.2em;
+  font-weight:bold;
+  letter-spacing:1px;
+  background:linear-gradient(145deg,#ff0000,#aa0000);
+  border:none;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+  box-shadow:
+    0 6px #550000,
+    0 0 15px rgba(255,0,0,.8);
+  transition:all .15s ease;
+  position:relative;
+}
+
+#saveBtn i {
+  margin-right:8px;
+  transition:transform .15s ease;
+}
+
+#saveBtn:active {
+  transform:translateY(6px);
+  box-shadow:
+    0 0 #550000,
+    0 0 25px rgba(255,0,0,1);
+}
+
+#saveBtn:active i {
+  transform:scale(1.3) rotate(-10deg);
+}
+
+#saveBtn::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:10px;
+  box-shadow:0 0 30px rgba(255,0,0,.6);
+  opacity:0;
+  transition:opacity .2s;
+}
+
+#saveBtn:active::after {
+  opacity:1;
+}
+
+/* RATINGS */
+.rating {
+  background:#222;
+  margin-top:20px;
+  padding:15px;
+  border-radius:8px;
+  border:1px solid #444;
+}
+
+.stars {
+  color:gold;
+  font-size:1.3em;
+}
+</style>
 </head>
+
 <body>
 
-    <div class="container">
-        <h1>TiffanyTinx</h1>
+<div class="container">
+<h1>TiffanyTinx</h1>
 
-        <div>
-            <label for="name">Your Name (leave blank for Anonymous):</label>
-            <input type="text" id="name" placeholder="Enter your name">
+<label>Name</label>
+<input id="name" placeholder="Anonymous">
 
-            <label for="characterRating">Character Rating (Pim, Charlie, etc.):</label>
-            <select id="characterRating">
-                <option value="Pim">Pim</option>
-                <option value="Charlie">Charlie</option>
-                <option value="Glep">Glep</option>
-                <option value="Mr Boss">Mr Boss</option>
-                <option value="Allen">Allen</option>
-            </select>
+<label>Character</label>
+<select id="character">
+  <option>Pim</option>
+  <option>Charlie</option>
+  <option>Glep</option>
+  <option>Mr Boss</option>
+</select>
 
-            <label for="stars">Stars (1.0 to 5.0):</label>
-            <select id="stars">
-                <option value="1.0">1.0 ★</option>
-                <option value="1.5">1.5 ★½</option>
-                <option value="2.0">2.0 ★★</option>
-                <option value="2.5">2.5 ★★½</option>
-                <option value="3.0">3.0 ★★★</option>
-                <option value="3.5">3.5 ★★★½</option>
-                <option value="4.0">4.0 ★★★★</option>
-                <option value="4.5">4.5 ★★★★½</option>
-                <option value="5.0">5.0 ★★★★★</option>
-            </select>
+<label>Stars</label>
+<select id="stars">
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+</select>
 
-            <label for="ppEnergy">PP Energy (1" to 10"):</label>
-            <select id="ppEnergy">
-                <option value="1">1"</option>
-                <option value="2">2"</option>
-                <option value="3">3"</option>
-                <option value="4">4"</option>
-                <option value="5">5"</option>
-                <option value="6">6"</option>
-                <option value="7">7"</option>
-                <option value="8">8"</option>
-                <option value="9">9"</option>
-                <option value="10">10"</option>
-            </select>
+<label>PP Energy</label>
+<select id="pp">
+  <option>1</option><option>2</option><option>3</option>
+  <option>4</option><option>5</option><option>6</option>
+  <option>7</option><option>8</option><option>9</option><option>10</option>
+</select>
 
-            <label for="review">Review/Comment:</label>
-            <textarea id="review" rows="3" placeholder="Leave a comment..."></textarea>
+<label>Comment</label>
+<textarea id="review"></textarea>
 
-            <button id="saveBtn"><i class="fas fa-save"></i> Save Rating</button>
-        </div>
+<button id="saveBtn">
+  <i class="fas fa-skull"></i> SAVE RATING
+</button>
 
-        <div class="rating-list" id="ratingList">
-            <h2><i class="fas fa-scroll"></i> The Vault of Reviews:</h2>
-        </div>
+<div id="list"></div>
+</div>
 
-        <div id="tokenDisplay">
-            <span id="sackIcons"></span>
-        </div>
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-    </div>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
+  authDomain: "tiffanytinx-bbf9c.firebaseapp.com",
+  databaseURL: "https://tiffanytinx-bbf9c-default-rtdb.firebaseio.com",
+  projectId: "tiffanytinx-bbf9c"
+};
 
-    <div id="tinxToggle" class="secret-toggle"><i class="fas fa-shopping-bag"></i></div> 
-    
-    <div id="adminToggle" class="secret-toggle"><i class="fas fa-anchor"></i></div>
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const ratingsRef = db.ref("ratings");
 
-    <div class="secret-controls" id="adminControls">
-        <label for="adminPassword">Admin Password:</label>
-        <input type="password" id="adminPassword" placeholder="Enter Password">
-        <button id="adminLoginBtn">Login</button>
-        <p id="adminStatus" style="color: #ffcc00; margin-top: 10px; font-size: 0.9em;"></p>
-    </div>
+/* iOS stability */
+firebase.database().goOffline();
+firebase.database().goOnline();
 
-    <div class="secret-controls" id="tinxControls">
-        <label for="tinxPassword">Tinx Password:</label>
-        <input type="password" id="tinxPassword" placeholder="Enter Password">
-        <button id="tinxClaimBtn">Claim Bundle</button>
-        <p id="tinxStatus" style="color: #ffcc00; margin-top: 10px; font-size: 0.9em;"></p>
-    </div>
+/* SAVE */
+document.getElementById("saveBtn").onclick = () => {
+  const stars = parseInt(starsEl.value);
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  const rating = {
+    name: nameEl.value || "Anonymous",
+    character: characterEl.value,
+    stars,
+    pp: parseInt(ppEl.value),
+    review: reviewEl.value,
+    timestamp: Date.now(),
+    isToken: stars === 5,
+    ...(stars === 5 ? { claimed:false } : {})
+  };
 
-    <script>
-        // --- CONFIGURATION ---
-        const ADMIN_PASSWORD = "ppeanile"; // YOUR ADMIN PASSWORD
-        const TINX_PASSWORD = "punchers";  // **CORRECTED TINX PASSWORD**
-        const TOKEN_BUNDLE_SIZE = 5;       // Number of tokens required for a claim
+  ratingsRef.push(rating);
+  nameEl.value = reviewEl.value = "";
+};
 
-        let isAdminLoggedIn = false;
+/* DOM refs */
+const nameEl = document.getElementById("name");
+const characterEl = document.getElementById("character");
+const starsEl = document.getElementById("stars");
+const ppEl = document.getElementById("pp");
+const reviewEl = document.getElementById("review");
+const list = document.getElementById("list");
 
-        // Firebase config (Use your existing config)
-        const firebaseConfig = {
-            apiKey: "AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
-            authDomain: "tiffanytinx-bbf9c.firebaseapp.com",
-            databaseURL: "https://tiffanytinx-bbf9c-default-rtdb.firebaseio.com",
-            projectId: "tiffanytinx-bbf9c",
-            storageBucket: "tiffanytinx-bbf9c.firebasestorage.app",
-            messagingSenderId: "300543672766",
-            appId: "1:300543672766:web:cae10d6758efee7f9ff9ef",
-            measurementId: "G-Q6WTK15T2K"
-        };
-
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const ratingsRef = database.ref('ratings');
-
-        // --- UTILITY FUNCTIONS ---
-        function getStarSymbols(rating) {
-            const fullStars = Math.floor(rating);
-            const halfStar = (rating % 1 !== 0) ? '½' : '';
-            const emptyStars = 5 - Math.ceil(rating);
-            return '★'.repeat(fullStars) + halfStar + '☆'.repeat(emptyStars);
-        }
-
-        // --- DISCREET CONTROL LOGIC ---
-        document.getElementById('adminToggle').addEventListener('click', () => {
-            const controls = document.getElementById('adminControls');
-            controls.style.display = controls.style.display === 'block' ? 'none' : 'block';
-            document.getElementById('tinxControls').style.display = 'none';
-        });
-
-        document.getElementById('tinxToggle').addEventListener('click', () => {
-            const controls = document.getElementById('tinxControls');
-            controls.style.display = controls.style.display === 'block' ? 'none' : 'block';
-            document.getElementById('adminControls').style.display = 'none';
-        });
-
-
-        // --- ADMIN LOGIN LOGIC ---
-        document.getElementById('adminLoginBtn').addEventListener('click', () => {
-            const password = document.getElementById('adminPassword').value;
-            const statusElement = document.getElementById('adminStatus');
-
-            if (password === ADMIN_PASSWORD) {
-                isAdminLoggedIn = true;
-                statusElement.textContent = "Admin Logged In! Delete buttons enabled.";
-                statusElement.style.color = "#00ff00"; 
-                document.getElementById('adminPassword').value = '';
-                document.getElementById('adminControls').style.display = 'none';
-                displayRatings();
-            } else {
-                isAdminLoggedIn = false;
-                statusElement.textContent = "Incorrect Password.";
-                statusElement.style.color = "#ff0000";
-                document.getElementById('adminPassword').value = '';
-            }
-        });
-        
-        // --- TINX CLAIM LOGIC ---
-        document.getElementById('tinxClaimBtn').addEventListener('click', () => {
-            const password = document.getElementById('tinxPassword').value;
-            const statusElement = document.getElementById('tinxStatus');
-
-            if (password !== TINX_PASSWORD) {
-                statusElement.textContent = "Incorrect Tinx Password.";
-                statusElement.style.color = "#ff0000";
-                document.getElementById('tinxPassword').value = '';
-                return;
-            }
-
-            statusElement.textContent = "Checking for claimable bundles...";
-            statusElement.style.color = "#ffcc00";
-
-            ratingsRef.orderByChild('isToken').equalTo(true).once('value', snapshot => {
-                const unclaimedTokens = [];
-                snapshot.forEach(child => {
-                    const tokenData = child.val();
-                    if (!tokenData.claimed) {
-                        unclaimedTokens.push(child.key);
-                    }
-                });
-
-                if (unclaimedTokens.length >= TOKEN_BUNDLE_SIZE) {
-                    // Claim the bundle by setting 'claimed' to true for the first 5 tokens
-                    const updates = {};
-                    for (let i = 0; i < TOKEN_BUNDLE_SIZE; i++) {
-                        updates[unclaimedTokens[i] + '/claimed'] = true;
-                    }
-                    
-                    database.ref('ratings').update(updates).then(() => {
-                        statusElement.textContent = `SUCCESS! Claimed ${TOKEN_BUNDLE_SIZE} tokens.`;
-                        statusElement.style.color = "#00ff00";
-                        document.getElementById('tinxPassword').value = '';
-                        displayRatings();
-                    }).catch(error => {
-                        statusElement.textContent = "Error claiming bundle: " + error.message;
-                        statusElement.style.color = "#ff0000";
-                    });
-
-                } else {
-                    statusElement.textContent = `Failed. Only ${unclaimedTokens.length} of ${TOKEN_BUNDLE_SIZE} tokens available.`;
-                    statusElement.style.color = "#ff0000";
-                }
-            });
-        });
-
-
-        // --- INTERACTION HANDLERS (Save, Delete, Vote) ---
-
-        // Save Rating (5-star reviews create tokens)
-        document.getElementById('saveBtn').addEventListener('click', () => {
-            const name = document.getElementById('name').value.trim() || "Anonymous";
-            const characterRating = document.getElementById('characterRating').value;
-            const stars = document.getElementById('stars').value;
-            const ppEnergy = document.getElementById('ppEnergy').value;
-            const review = document.getElementById('review').value;
-
-            const isFiveStar = parseFloat(stars) === 5.0;
-
-            const newRating = {
-                name,
-                characterRating: characterRating,
-                stars: parseFloat(stars),
-                ppEnergy: parseInt(ppEnergy),
-                review,
-                likes: 0,
-                dislikes: 0,
-                timestamp: Date.now(),
-                isToken: isFiveStar,
-                claimed: isFiveStar ? false : undefined
-            };
-
-            ratingsRef.push(newRating, (error) => {
-                if (error) {
-                    // This is where a failure would log. Check Firebase Rules if this is hit.
-                    console.error("Error saving rating:", error);
-                    alert("Error saving rating. Check console and Firebase rules.");
-                } else {
-                    document.getElementById('name').value = '';
-                    document.getElementById('stars').value = '3.0';
-                    document.getElementById('ppEnergy').value = '5';
-                    document.getElementById('review').value = '';
-                    document.getElementById('characterRating').value = 'Pim';
-                    displayRatings();
-                }
-            });
-        });
-
-        // Delete Handler
-        window.deleteRating = (id) => {
-            if (!isAdminLoggedIn) {
-                alert("You must log in as admin to delete reviews.");
-                return;
-            }
-            if (confirm("Are you sure you want to delete this review? This action cannot be undone.")) {
-                database.ref('ratings/' + id).remove().then(() => {
-                    displayRatings();
-                });
-            }
-        };
-
-        // Like/Dislike Handler
-        window.updateVote = (id, type) => {
-            const ref = database.ref('ratings/' + id);
-            ref.transaction((currentData) => {
-                if (currentData) {
-                    if (type === 'like') {
-                        currentData.likes = (currentData.likes || 0) + 1;
-                    } else if (type === 'dislike') {
-                        currentData.dislikes = (currentData.dislikes || 0) + 1;
-                    }
-                }
-                return currentData;
-            }, (error, committed) => {
-                if (error) {
-                    console.log('Transaction failed: ', error);
-                } else if (committed) {
-                    displayRatings();
-                }
-            });
-        };
-
-        // --- TOKEN VISUALS (Tally System) ---
-        function renderTokenIcon(isClaimed, isBundle) {
-            // Icon for a claimed bundle (empty)
-            if (isClaimed) {
-                return `<span class="token-icon token-bundle token-bundle-claimed"><i class="fas fa-box-open"></i></span>`;
-            }
-            // Icon for a full bundle (unclaimed)
-            if (isBundle) {
-                return `<span class="token-icon token-bundle"><i class="fas fa-gift"></i></span>`;
-            }
-            // Icon for an individual token (Custom plastic sack w/ white powder)
-            return `
-                <span class="token-icon token-individual">
-                    <i class="fas fa-bag-shopping token-base"></i>
-                    <i class="fas fa-circle token-powder"></i>
-                </span>
-            `;
-        }
-
-        function updateTokenDisplay(unclaimedCount, claimedCount) {
-            const sackIconsElement = document.getElementById('sackIcons');
-            sackIconsElement.innerHTML = '';
-            
-            const totalBundles = Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE) + claimedCount;
-            const currentSacks = unclaimedCount % TOKEN_BUNDLE_SIZE;
-            
-            let bundlesRendered = 0;
-
-            // 1. Render claimed bundles (empty boxes)
-            for (let i = 0; i < claimedCount; i++) {
-                sackIconsElement.innerHTML += renderTokenIcon(true, true);
-                bundlesRendered++;
-            }
-
-            // 2. Render current full bundles (unclaimed full sets)
-            for (let i = 0; i < Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE); i++) {
-                sackIconsElement.innerHTML += renderTokenIcon(false, true);
-                bundlesRendered++;
-            }
-            
-            // 3. Display Separator
-            if (bundlesRendered > 0 && currentSacks > 0) {
-                const separator = document.createElement('span');
-                separator.textContent = ' | ';
-                sackIconsElement.appendChild(separator);
-            }
-
-            // 4. Display Individual Tokens (Tally Marks)
-            for (let i = 0; i < currentSacks; i++) {
-                sackIconsElement.innerHTML += renderTokenIcon(false, false);
-            }
-
-            // Fallback for an empty bank
-            if (unclaimedCount === 0 && claimedCount === 0) {
-                sackIconsElement.textContent = 'No tokens banked.';
-                sackIconsElement.style.fontSize = '1em';
-            } else {
-                sackIconsElement.style.fontSize = '1.8em';
-            }
-        }
-
-
-        function displayRatings() {
-            let unclaimedTokenCount = 0;
-            let claimedTokenCount = 0;
-
-            ratingsRef.orderByChild('timestamp').limitToLast(50).once('value', snapshot => {
-                const ratingList = document.getElementById('ratingList');
-                const ratingsArray = [];
-                snapshot.forEach(child => {
-                    const data = child.val();
-                    ratingsArray.push({ id: child.key, ...data });
-
-                    if (data.isToken) {
-                        if (data.claimed) {
-                            claimedTokenCount++;
-                        } else {
-                            unclaimedTokenCount++;
-                        }
-                    }
-                });
-
-                // Update the visual token display
-                updateTokenDisplay(unclaimedTokenCount, claimedTokenCount);
-
-                ratingList.innerHTML = '<h2><i class="fas fa-scroll"></i> The Vault of Reviews:</h2>';
-
-                ratingsArray.reverse().forEach(data => {
-                    const div = document.createElement('div');
-                    div.className = 'rating-item';
-
-                    const starSymbols = getStarSymbols(data.stars);
-                    const ppEnergyText = `${data.ppEnergy}"`;
-                    const deleteButton = isAdminLoggedIn
-                        ? `<button class="delete-btn" onclick="deleteRating('${data.id}')"><i class="fas fa-trash-alt"></i> Delete</button>`
-                        : '';
-
-                    // Display token status if it was a 5-star review
-                    const tokenStatus = data.isToken 
-                        ? (data.claimed 
-                            ? `<span style="color: #444; font-size: 0.9em; margin-left: 10px;">Token: Claimed <i class="fas fa-box-open"></i></span>`
-                            : `<span style="color: #fff; font-size: 0.9em; margin-left: 10px;">Token: Banked <i class="fas fa-bag-shopping"></i></span>`
-                          )
-                        : '';
-
-                    div.innerHTML = `
-                        <div class="rating-header">
-                            <span class="name">${data.name}</span>
-                            <span class="timestamp">${new Date(data.timestamp).toLocaleString()}</span>
-                            ${tokenStatus}
-                        </div>
-                        <div class="rating-scores">
-                            <div><span class="character-rating">Character: ${data.characterRating || 'N/A'}</span></div>
-                            <div><span class="stars">${starSymbols}</span> Stars (${data.stars}/5.0)</div>
-                            <div><span class="pp-energy">${ppEnergyText}</span> PP Energy (${data.ppEnergy}/10")</div>
-                        </div>
-                        <p style="margin-top: 10px;">${data.review ? 'Comment: ' + data.review : ''}</p>
-
-                        <div class="like-dislike-container">
-                            <button class="like-dislike-btn" onclick="updateVote('${data.id}', 'like')">
-                                <i class="fas fa-thumbs-up"></i> <span class="like-dislike-count">${data.likes || 0}</span>
-                            </button>
-                            <button class="like-dislike-btn" onclick="updateVote('${data.id}', 'dislike')">
-                                <i class="fas fa-thumbs-down"></i> <span class="like-dislike-count">${data.dislikes || 0}</span>
-                            </button>
-                            ${deleteButton}
-                        </div>
-                    `;
-                    ratingList.appendChild(div);
-                });
-            });
-        }
-
-        // Load ratings on page load
-        displayRatings();
-    </script>
+/* DISPLAY */
+ratingsRef.limitToLast(20).on("value", snap => {
+  list.innerHTML = "";
+  snap.forEach(child => {
+    const r = child.val();
+    const div = document.createElement("div");
+    div.className = "rating";
+    div.innerHTML = `
+      <b>${r.name}</b> (${r.character})<br>
+      <span class="stars">${"★".repeat(r.stars)}</span><br>
+      PP: ${r.pp}<br>
+      ${r.review || ""}
+    `;
+    list.prepend(div);
+  });
+});
+</script>
 
 </body>
 </html>
