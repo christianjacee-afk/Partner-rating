@@ -116,6 +116,11 @@
             font-size: 1.5em;
             margin-right: 15px;
         }
+        .character-rating {
+            color: #ff00ff; /* A new color for the character rating */
+            font-weight: bold;
+            margin-right: 15px;
+        }
         .pp-energy {
             color: #00ccff; /* Blue for PP Energy */
             font-weight: bold;
@@ -168,12 +173,13 @@
             <label for="name">Your Name (leave blank for Anonymous):</label>
             <input type="text" id="name" placeholder="Enter your name">
 
-            <label for="ratingType">Rating Subject:</label>
-            <select id="ratingType">
+            <label for="characterRating">Character Rating (Pim, Charlie, etc.):</label>
+            <select id="characterRating">
                 <option value="Pim">Pim</option>
                 <option value="Charlie">Charlie</option>
                 <option value="Glep">Glep</option>
                 <option value="Mr Boss">Mr Boss</option>
+                <option value="Allen">Allen</option>
             </select>
 
             <label for="stars">Stars (1.0 to 5.0):</label>
@@ -214,8 +220,10 @@
         </div>
 
     </div>
-    
-    <div id="adminToggle"><i class="fas fa-anchor"></i></div> <div class="admin-controls" id="adminControls">
+
+    <div id="adminToggle"><i class="fas fa-anchor"></i></div>
+
+    <div class="admin-controls" id="adminControls">
         <label for="adminPassword">Admin Password:</label>
         <input type="password" id="adminPassword" placeholder="Enter Password">
         <button id="adminLoginBtn">Login</button>
@@ -269,7 +277,6 @@
                 statusElement.textContent = "Admin Logged In! Delete buttons enabled.";
                 statusElement.style.color = "#00ff00"; // Green for success
                 document.getElementById('adminPassword').value = '';
-                // Hide the login box after successful login
                 document.getElementById('adminControls').style.display = 'none';
                 displayRatings(); // Reload to show delete buttons
             } else {
@@ -282,17 +289,18 @@
 
         // --- INTERACTION HANDLERS ---
 
-        // Save Rating (No changes here)
+        // Save Rating
         document.getElementById('saveBtn').addEventListener('click', () => {
             const name = document.getElementById('name').value.trim() || "Anonymous";
-            const type = document.getElementById('ratingType').value;
+            // CHANGED: Get value from new ID
+            const characterRating = document.getElementById('characterRating').value;
             const stars = document.getElementById('stars').value;
             const ppEnergy = document.getElementById('ppEnergy').value;
             const review = document.getElementById('review').value;
 
             const newRating = {
                 name,
-                type,
+                characterRating: characterRating, // CHANGED: Save under new key
                 stars: parseFloat(stars),
                 ppEnergy: parseInt(ppEnergy),
                 review,
@@ -309,13 +317,13 @@
                     document.getElementById('stars').value = '3.0';
                     document.getElementById('ppEnergy').value = '5';
                     document.getElementById('review').value = '';
-                    document.getElementById('ratingType').value = 'Pim';
+                    document.getElementById('characterRating').value = 'Pim'; // CHANGED: Reset new ID
                     displayRatings();
                 }
             });
         });
 
-        // Delete Handler (Bound to individual buttons later)
+        // Delete Handler (No changes here)
         window.deleteRating = (id) => {
             if (!isAdminLoggedIn) {
                 alert("You must log in as admin to delete reviews.");
@@ -377,12 +385,12 @@
                             <span class="name">${data.name}</span>
                             <span class="timestamp">${new Date(data.timestamp).toLocaleString()}</span>
                         </div>
-                        <p style="color: #ffaaaa;">Subject: ${data.type}</p>
                         <div class="rating-scores">
+                            <div><span class="character-rating">Character: ${data.characterRating || 'N/A'}</span></div>
                             <div><span class="stars">${starSymbols}</span> Stars (${data.stars}/5.0)</div>
                             <div><span class="pp-energy">${ppEnergyText}</span> PP Energy (${data.ppEnergy}/10")</div>
                         </div>
-                        <p>${data.review ? 'Comment: ' + data.review : ''}</p>
+                        <p style="margin-top: 10px;">${data.review ? 'Comment: ' + data.review : ''}</p>
 
                         <div class="like-dislike-container">
                             <button class="like-dislike-btn" onclick="updateVote('${data.id}', 'like')">
