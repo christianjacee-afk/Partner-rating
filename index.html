@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TiffanyTinx Ratings</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
@@ -9,130 +10,168 @@
 
 <style>
 body {
-  background:#0a0a0a;
+  background:
+    radial-gradient(circle at top, #2a0000 0%, #0a0a0a 45%),
+    repeating-radial-gradient(circle at center, rgba(255,0,0,.15) 0 2px, transparent 3px 12px);
   color:#eee;
   font-family:'Cinzel', serif;
   padding:20px;
+  min-height:100vh;
 }
 
 .container {
   max-width:800px;
   margin:auto;
-  background:#151515;
+  background:rgba(20,20,20,.95);
   padding:30px;
-  border-radius:12px;
-  border:4px solid #ff0000;
-  box-shadow:0 0 25px rgba(255,0,0,.5);
-  position:relative;
+  border-radius:30px;
+  border:3px solid #ff1a1a;
+  box-shadow:
+    0 0 35px rgba(255,0,0,.7),
+    inset 0 0 25px rgba(255,0,0,.2);
 }
 
 h1 {
   font-family:'Metal Mania', cursive;
   text-align:center;
-  font-size:4em;
-  color:#ff0000;
-  margin-bottom:30px;
+  font-size:4.5em;
+  color:#ff2b2b;
+  margin-bottom:25px;
+  text-shadow:
+    0 0 10px #ff0000,
+    0 0 25px rgba(255,0,0,.8);
 }
 
 label {
   display:block;
-  margin-top:15px;
-  margin-bottom:5px;
-  color:#ffaaaa;
+  margin-top:18px;
+  margin-bottom:6px;
+  color:#ffb3b3;
+  font-size:.9em;
+  letter-spacing:1px;
 }
 
 input, select, textarea {
   width:100%;
-  padding:10px;
-  background:#222;
-  border:2px solid #ff0000;
+  padding:12px;
+  background:#1e1e1e;
+  border:2px solid #ff3b3b;
   color:#fff;
-  border-radius:6px;
+  border-radius:20px;
+  box-shadow: inset 0 0 10px rgba(255,0,0,.4);
 }
+
+textarea { resize:none; }
 
 #saveBtn {
-  margin-top:20px;
+  margin-top:25px;
   width:100%;
-  padding:15px;
-  font-size:1.2em;
-  font-weight:bold;
-  letter-spacing:1px;
-  background:linear-gradient(145deg,#ff0000,#aa0000);
+  padding:18px;
+  font-size:1.3em;
+  font-family:'Metal Mania', cursive;
+  background:
+    linear-gradient(145deg,#ff0000,#ff5c5c);
   border:none;
-  border-radius:10px;
+  border-radius:999px;
   color:white;
   cursor:pointer;
-  box-shadow:0 6px #550000, 0 0 15px rgba(255,0,0,.8);
-  transition:all .15s ease;
-  position:relative;
-  overflow:hidden;
+  box-shadow:
+    0 10px #700000,
+    0 0 30px rgba(255,0,0,1);
+  transition:.2s;
 }
-
-#saveBtn i { margin-right:8px; }
 
 #saveBtn:active {
-  transform:translateY(6px);
-  box-shadow:0 0 #550000, 0 0 25px rgba(255,0,0,1);
+  transform:translateY(8px);
+  box-shadow:0 0 #700000, 0 0 40px rgba(255,0,0,1);
 }
 
-.flame {
-  position:absolute;
-  bottom:0;
-  width:12px;
-  height:12px;
-  background:radial-gradient(circle at center, #fff 0%, #ff0 30%, #ff4500 70%);
-  border-radius:50%;
-  animation:flameUp 1s ease-out forwards;
+/* 🔥 FULLSCREEN FLAME */
+.flame-overlay {
+  position:fixed;
+  inset:0;
+  z-index:9999;
   pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 85%, #fff 0%, #ff0 18%, #ff4500 40%, #8b0000 65%, transparent 100%);
+  animation:flameRise 2s ease-out forwards;
 }
 
-@keyframes flameUp {
-  0% { transform:translateY(0) scale(1); opacity:1; }
-  100% { transform:translateY(-120px) scale(0.2); opacity:0; }
+@keyframes flameRise {
+  0% { opacity:0; transform:translateY(100%); }
+  20% { opacity:1; }
+  100% { opacity:0; transform:translateY(-100%); }
 }
 
+/* RATINGS */
 .rating {
-  background:#222;
-  margin-top:20px;
-  padding:15px;
-  border-radius:8px;
-  border:1px solid #444;
+  background:
+    linear-gradient(180deg, #2b2b2b, #1b1b1b);
+  margin-top:25px;
+  padding:18px;
+  border-radius:25px;
+  border:2px solid #ff2b2b;
+  box-shadow:
+    0 0 15px rgba(255,0,0,.4),
+    inset 0 0 12px rgba(255,255,255,.05);
 }
 
-.stars { color:gold; }
+.stars {
+  color:#ffd700;
+  font-size:1.2em;
+  text-shadow:0 0 8px gold;
+}
 
+/* FLOATY CUTE EFFECT */
+.rating {
+  animation:floaty 6s ease-in-out infinite;
+}
+
+@keyframes floaty {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-6px); }
+}
+
+/* ADMIN */
 .secret-toggle {
   position:fixed;
   bottom:20px;
-  width:55px;
-  height:55px;
+  right:20px;
+  width:65px;
+  height:65px;
   border-radius:50%;
-  background:#ff0000;
+  background:
+    radial-gradient(circle, #ff5c5c, #ff0000);
   color:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:1.5em;
+  font-size:1.8em;
   cursor:pointer;
-  box-shadow:0 0 15px rgba(255,0,0,.8);
+  box-shadow:0 0 25px rgba(255,0,0,1);
 }
 
-#adminToggle { right:20px; }
-#tinxToggle { right:90px; background:#fff; color:#000; }
-
-.secret-panel {
+#adminPanel {
   position:fixed;
-  bottom:90px;
-  background:#330000;
-  padding:15px;
-  border-radius:8px;
-  border:2px solid #ff0000;
+  bottom:100px;
+  right:20px;
+  background:#260000;
+  padding:18px;
+  border-radius:20px;
+  border:2px solid #ff3b3b;
   display:none;
-  width:230px;
+  width:240px;
+  box-shadow:0 0 25px rgba(255,0,0,.8);
 }
 
-#adminPanel { right:20px; }
-#tinxPanel { right:90px; }
+button {
+  border-radius:999px;
+  padding:10px;
+  background:#ff0000;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -146,10 +185,10 @@ input, select, textarea {
 
 <label>Character</label>
 <select id="character">
-  <option value="Pim">Pim</option>
-  <option value="Charlie">Charlie</option>
-  <option value="Glep">Glep</option>
-  <option value="Mr Boss">Mr Boss</option>
+  <option>Pim</option>
+  <option>Charlie</option>
+  <option>Glep</option>
+  <option>Mr Boss</option>
 </select>
 
 <label>Stars</label>
@@ -165,7 +204,8 @@ input, select, textarea {
 <select id="pp">
   <option value="1">1</option><option value="2">2</option><option value="3">3</option>
   <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-  <option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+  <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+  <option value="10">10</option>
 </select>
 
 <label>Comment</label>
@@ -176,107 +216,80 @@ input, select, textarea {
 <div id="list"></div>
 </div>
 
-<div id="adminToggle" class="secret-toggle"><i class="fas fa-anchor"></i></div>
-<div id="tinxToggle" class="secret-toggle"><i class="fas fa-gift"></i></div>
+<div class="secret-toggle" id="adminToggle">
+  <i class="fas fa-anchor"></i>
+</div>
 
-<div id="adminPanel" class="secret-panel">
+<div id="adminPanel">
   <label>Admin Password</label>
   <input type="password" id="adminPass">
   <button id="adminLogin">Login</button>
   <p id="adminStatus"></p>
 </div>
 
-<div id="tinxPanel" class="secret-panel">
-  <label>Tinx Password</label>
-  <input type="password" id="tinxPass">
-  <button id="tinxClaim">Claim Tokens</button>
-  <p id="tinxStatus"></p>
-</div>
-
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-const firebaseConfig = {
+firebase.initializeApp({
   apiKey: "AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
   authDomain: "tiffanytinx-bbf9c.firebaseapp.com",
   databaseURL: "https://tiffanytinx-bbf9c-default-rtdb.firebaseio.com",
   projectId: "tiffanytinx-bbf9c"
-};
+});
 
-firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const ratingsRef = db.ref("ratings");
 
 const ADMIN_PASSWORD = "ppeanile";
-const TINX_PASSWORD = "punchers";
 let isAdmin = false;
 
-/* TOGGLES */
 adminToggle.onclick = () => {
-  adminPanel.style.display = adminPanel.style.display === "block" ? "none" : "block";
-  tinxPanel.style.display = "none";
+  adminPanel.style.display =
+    adminPanel.style.display === "block" ? "none" : "block";
 };
 
-tinxToggle.onclick = () => {
-  tinxPanel.style.display = tinxPanel.style.display === "block" ? "none" : "block";
-  adminPanel.style.display = "none";
-};
-
-/* ADMIN LOGIN */
 adminLogin.onclick = () => {
   if (adminPass.value === ADMIN_PASSWORD) {
     isAdmin = true;
     adminStatus.textContent = "Admin enabled";
     adminStatus.style.color = "#0f0";
     adminPanel.style.display = "none";
-    renderRatings();
-  } else {
-    adminStatus.textContent = "Wrong password";
-    adminStatus.style.color = "#f00";
+    render();
   }
 };
 
-/* FLAME */
-function flameBurst() {
-  for (let i = 0; i < 12; i++) {
-    const f = document.createElement("div");
-    f.className = "flame";
-    f.style.left = Math.random() * 100 + "%";
-    saveBtn.appendChild(f);
-    setTimeout(() => f.remove(), 1000);
-  }
+function fullFlame() {
+  const f = document.createElement("div");
+  f.className = "flame-overlay";
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 2000);
 }
 
-/* SAVE */
 saveBtn.onclick = () => {
   const starsVal = parseInt(stars.value);
-
   ratingsRef.push({
     name: name.value || "Anonymous",
     character: character.value,
     stars: starsVal,
     pp: parseInt(pp.value),
     review: review.value,
-    timestamp: Date.now(),
-    isToken: starsVal === 5,
-    claimed: starsVal === 5 ? false : null
+    timestamp: Date.now()
   });
 
-  if (starsVal === 5) flameBurst();
+  if (starsVal === 5) fullFlame();
 
   name.value = "";
   review.value = "";
 };
 
-/* DELETE */
 window.deleteRating = id => {
-  if (!isAdmin) return;
-  if (confirm("Delete this rating?")) ratingsRef.child(id).remove();
+  if (isAdmin && confirm("Delete this rating?")) {
+    ratingsRef.child(id).remove();
+  }
 };
 
-/* RENDER */
-function renderRatings() {
+function render() {
   ratingsRef.limitToLast(25).once("value", snap => {
     list.innerHTML = "";
     snap.forEach(child => {
@@ -284,9 +297,9 @@ function renderRatings() {
       const div = document.createElement("div");
       div.className = "rating";
       div.innerHTML = `
-        <b>${r.name}</b> (${r.character})<br>
-        <span class="stars">${"★".repeat(r.stars)}</span><br>
-        PP: ${r.pp}<br>
+        <b>${r.name || "Anonymous"}</b> (${r.character || "Unknown"})<br>
+        <span class="stars">${"★".repeat(r.stars || 0)}</span><br>
+        PP: ${r.pp ?? "N/A"}<br>
         ${r.review || ""}
         ${isAdmin ? `<br><button onclick="deleteRating('${child.key}')">Delete</button>` : ""}
       `;
@@ -295,7 +308,7 @@ function renderRatings() {
   });
 }
 
-ratingsRef.limitToLast(25).on("value", renderRatings);
+ratingsRef.on("value", render);
 </script>
 
 </body>
