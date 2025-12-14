@@ -15,7 +15,7 @@ body{
   font-family:'Cinzel',serif;
   padding:20px;
   min-height: 100vh;
-  padding-bottom: 100px; /* Space for the fixed controls */
+  padding-bottom: 100px;
 }
 .container{
   max-width:820px;
@@ -106,63 +106,91 @@ button{
   background:#ff3b3b;
   font-weight:bold;
   cursor:pointer;
-  display: block; /* Make sure buttons take full width */
+  display: block;
   width: 100%;
   text-align: center;
 }
-.panel button {
+.rating button {
     margin-top: 5px;
+    background: #444; /* Darker button for actions */
+    color: #eee;
+    border: 1px solid #ff3b3b;
+}
+.rating button:hover {
+    background: #ff3b3b;
 }
 
-/* 🔥 FULLSCREEN FLAME */
-.flame{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  background:radial-gradient(circle at 50% 85%,#fff,#ff0,#ff4500,#8b0000,transparent);
-  animation:rise 2s ease-out forwards;
+/* 🥔 FULLSCREEN POTATO EXPLOSION */
+.potato-explosion {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10em;
+  color: #ff9900; /* Baked potato color */
+  animation: explode 3s ease-out forwards;
 }
-@keyframes rise{
-  from{opacity:0;transform:translateY(100%)}
-  25%{opacity:1}
-  to{opacity:0;transform:translateY(-100%)}
+.potato-explosion::before {
+  content: '🥔'; /* The potato emoji */
+  animation: potato-jiggle 0.1s infinite;
+  text-shadow: 0 0 50px rgba(255, 153, 0, 0.8), 0 0 100px rgba(255, 69, 0, 0.5);
 }
 
-/* --- TOKEN SYSTEM STYLES --- */
+@keyframes explode {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(3); opacity: 0.8; }
+  100% { transform: scale(10); opacity: 0; }
+}
+@keyframes potato-jiggle {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(-0deg); }
+}
+
+/* --- TOKEN SYSTEM STYLES (Potato Themed) --- */
 #tokenDisplay {
     margin-top: 50px;
     padding: 20px 0;
-    border-top: 2px solid #ffcc00;
+    border-top: 2px solid #ff9900; /* Potato yellow/orange */
     text-align: center;
     font-size: 1.8em;
-    color: #ffcc00;
+    color: #ff9900;
 }
 .token-icon {
     margin: 0 8px;
     display: inline-block;
 }
+
+/* INDIVIDUAL TOKEN (Potato) */
 .token-individual {
     font-size: 1em;
-    color: #ccc;
+    color: #663300; /* Potato skin brown */
     position: relative;
     padding: 0 5px;
 }
 .token-individual .token-base {
-    color: #666;
+    color: #663300; /* Darker brown for the potato */
     font-size: 1.6em;
 }
 .token-individual .token-powder {
-    color: #fff; 
-    font-size: 0.6em;
+    color: #ffcc00; /* Butter/Gold */
+    font-size: 0.4em;
     position: absolute;
-    top: 10px;
+    top: 12px;
     left: 50%;
     transform: translateX(-50%);
     text-shadow: 0 0 2px rgba(0, 0, 0, 0.5); 
 }
+
+/* CLAIMED BUNDLE (Large Icon) */
 .token-bundle {
     font-size: 2.5em;
-    color: #ffcc00;
+    color: #ff9900;
     margin: 0 15px;
     border-right: 2px solid #444;
     padding-right: 15px;
@@ -232,9 +260,9 @@ button{
   <p id="adminStatus"></p>
   
   <div id="adminTools" style="display:none; margin-top: 15px; border-top: 1px solid #ff3b3b; padding-top: 10px;">
-    <p style="color: #ffb3b3; font-weight: bold; margin-bottom: 5px;">Token Control</p>
-    <button onclick="adminToggleTokenStatus('add')"><i class="fas fa-plus"></i> Add Token</button>
-    <button onclick="adminToggleTokenStatus('remove')"><i class="fas fa-minus"></i> Remove Token</button>
+    <p style="color: #ffb3b3; font-weight: bold; margin-bottom: 5px;">Bulk Token Control (Adds new token rating)</p>
+    <button onclick="adminToggleTokenStatus('add')"><i class="fas fa-plus"></i> Add New Token Rating</button>
+    <button onclick="adminToggleTokenStatus('remove')"><i class="fas fa-minus"></i> Remove Oldest Token</button>
   </div>
 </div>
 
@@ -276,7 +304,7 @@ adminLogin.onclick=()=>{
     isAdmin=true;
     adminStatus.textContent="Admin enabled";
     adminStatus.style.color = "#00ff00";
-    adminTools.style.display = "block"; // Show the token controls
+    adminTools.style.display = "block";
     render();
     adminPanel.style.display="none";
   } else {
@@ -285,30 +313,58 @@ adminLogin.onclick=()=>{
   }
 };
 
-// --- NEW ADMIN TOKEN CONTROL FUNCTION ---
-window.adminToggleTokenStatus = (action) => {
+// --- NEW ADMIN PER-RATING TOKEN CONTROL ---
+window.adminSetToken = (id, status) => {
     if (!isAdmin) {
-        alert("You must be logged in as Admin to use this tool.");
+        alert("You must be logged in as Admin to modify token status.");
+        return;
+    }
+    const actionText = status ? 'ADD' : 'REMOVE';
+    if (!confirm(`Are you sure you want to ${actionText} token status for this rating?`)) {
         return;
     }
     
-    // 1. Find the oldest unclaimed token
+    const updates = {};
+    updates.token = status;
+    updates.claimed = status ? false : null; // If removing, set to null to delete the property
+    updates.stars = status ? 5 : 4; // Enforce that a rating with a token is 5 stars
+
+    // Fetch the current rating to keep existing non-token stars if removing
+    ref.child(id).once('value', snapshot => {
+        const currentRating = snapshot.val();
+        if (!status) {
+             // If removing token, revert stars back to the original value or just remove the token flag cleanly
+             updates.stars = currentRating.stars;
+        }
+
+        ref.child(id).update(updates).then(() => {
+            alert(`Token status successfully ${actionText}ed!`);
+            render();
+        }).catch(error => {
+            alert("Error updating token status: " + error.message);
+        });
+    });
+};
+
+// --- ADMIN BULK TOKEN CONTROL ---
+window.adminToggleTokenStatus = (action) => {
+    if (!isAdmin) return;
+    
+    // 1. Find the oldest unclaimed token to remove
     if (action === 'remove') {
         ref.orderByChild('token').equalTo(true).once('value', snapshot => {
             let targetKey = null;
             snapshot.forEach(child => {
                 const r = child.val();
-                // Find the first UNCLAIMED token (oldest one)
                 if (!r.claimed) {
                     targetKey = child.key;
-                    return true; // Break the loop
+                    return true;
                 }
             });
             
             if (targetKey) {
-                // To "remove" a token, we set its 'token' flag to false
-                ref.child(targetKey).update({token: false, claimed: undefined}).then(() => {
-                    alert("Oldest unclaimed token removed!");
+                ref.child(targetKey).update({token: false, claimed: null, stars: 4}).then(() => {
+                    alert("Oldest unclaimed token removed and rating stars set to 4!");
                     render();
                 });
             } else {
@@ -316,9 +372,8 @@ window.adminToggleTokenStatus = (action) => {
             }
         });
     
-    // 2. Add a new token (Simulate a 5-star rating post)
+    // 2. Add a new token (Simulate a new 5-star rating post)
     } else if (action === 'add') {
-         // This simulates adding a new 5-star rating just for the token effect
         ref.push({
             name: "ADMIN ADDED TOKEN",
             character: "Admin",
@@ -334,6 +389,7 @@ window.adminToggleTokenStatus = (action) => {
         });
     }
 };
+
 
 // --- TINX CLAIM LOGIC ---
 tinxClaimBtn.onclick = () => {
@@ -351,7 +407,7 @@ tinxClaimBtn.onclick = () => {
         const unclaimedTokens = [];
         snapshot.forEach(child => {
             const tokenData = child.val();
-            if (!tokenData.claimed) {
+            if (tokenData.token && !tokenData.claimed) {
                 unclaimedTokens.push(child.key);
             }
         });
@@ -366,6 +422,7 @@ tinxClaimBtn.onclick = () => {
                 tinxStatus.textContent = `SUCCESS! Claimed ${TOKEN_BUNDLE_SIZE} tokens.`;
                 tinxStatus.style.color = "#00ff00";
                 tinxPass.value = '';
+                potatoExplosion(); // 🥔 3-SECOND POTATO EXPLOSION ON SUCCESS
                 render();
             }).catch(error => {
                 tinxStatus.textContent = "Error claiming bundle: " + error.message;
@@ -379,11 +436,12 @@ tinxClaimBtn.onclick = () => {
     });
 };
 
-function flame(){
+function potatoExplosion(){
   const f=document.createElement("div");
-  f.className="flame";
+  f.className="potato-explosion";
   document.body.appendChild(f);
-  setTimeout(()=>f.remove(),2000);
+  // Remove after 3 seconds, as requested
+  setTimeout(()=>f.remove(), 3000); 
 }
 
 // --- SAVE RATING LOGIC ---
@@ -396,10 +454,10 @@ saveBtn.onclick=()=>{
     pp:parseInt(pp.value),
     review:review.value,
     token: s===5, 
-    claimed: s===5 ? false : undefined,
+    claimed: s===5 ? false : null,
     time:Date.now()
   });
-  if(s===5) flame();
+  if(s===5) potatoExplosion(); // 🥔 ALSO EXPLODES ON NEW 5-STAR RATING
   name.value="";review.value="";
 };
 
@@ -419,15 +477,18 @@ window.editRating=(id,r)=>{
 // --- TOKEN VISUALS ---
 function renderTokenIcon(isClaimed, isBundle) {
     if (isClaimed) {
-        return `<span class="token-icon token-bundle token-bundle-claimed"><i class="fas fa-box-open"></i></span>`;
+        // Claimed Bundle (used up)
+        return `<span class="token-icon token-bundle token-bundle-claimed" title="Claimed Bundle"><i class="fas fa-box-open"></i></span>`;
     }
     if (isBundle) {
-        return `<span class="token-icon token-bundle"><i class="fas fa-gift"></i></span>`;
+        // Unclaimed Full Bundle (ready to cash in)
+        return `<span class="token-icon token-bundle" title="Unclaimed Bundle"><i class="fas fa-sack-dollar"></i></span>`;
     }
+    // Individual Token (Potato)
     return `
-        <span class="token-icon token-individual">
-            <i class="fas fa-bag-shopping token-base"></i>
-            <i class="fas fa-circle token-powder"></i>
+        <span class="token-icon token-individual" title="Individual Token">
+            <i class="fas fa-circle token-base"></i>
+            <i class="fas fa-star token-powder"></i>
         </span>
     `;
 }
@@ -453,6 +514,7 @@ function updateTokenDisplay(unclaimedCount, claimedCount) {
     if (bundlesRendered > 0 && currentSacks > 0) {
         const separator = document.createElement('span');
         separator.textContent = ' | ';
+        separator.style.fontSize = '1em';
         sackIconsElement.appendChild(separator);
     }
 
@@ -461,10 +523,16 @@ function updateTokenDisplay(unclaimedCount, claimedCount) {
     }
 
     if (unclaimedCount === 0 && claimedCount === 0) {
-        sackIconsElement.textContent = 'No tokens banked.';
+        sackIconsElement.textContent = 'No tokens banked (0/5).';
         sackIconsElement.style.fontSize = '1em';
     } else {
         sackIconsElement.style.fontSize = '1.8em';
+        // Add a count after the icons
+        const count = document.createElement('span');
+        count.textContent = ` (${currentSacks}/${TOKEN_BUNDLE_SIZE})`;
+        count.style.fontSize = '0.5em';
+        count.style.color = '#ff9900';
+        sackIconsElement.appendChild(count);
     }
 }
 
@@ -494,8 +562,13 @@ function render(){
         d.className="rating";
         
         const tokenStatus = r.token 
-            ? `<span style="color:${r.claimed?'#555':'#fff'}; font-weight:bold; margin-left: 10px;">🎟 Token: ${r.claimed?"CLAIMED":"UNCLAIMED"}</span>`
+            ? `<span style="color:${r.claimed?'#555':'#ff9900'}; font-weight:bold; margin-left: 10px;">🥔 Token: ${r.claimed?"CLAIMED":"UNCLAIMED"}</span>`
             : '';
+
+        // Toggles for admin
+        const tokenToggleBtn = r.token 
+            ? `<button onclick="adminSetToken('${c.key}', false)">Remove Token</button>` 
+            : `<button onclick="adminSetToken('${c.key}', true)">Add Token</button>`;
         
         d.innerHTML=`
             <b>${r.name}</b> (${r.character}) ${tokenStatus}<br>
@@ -504,13 +577,15 @@ function render(){
             ${r.review||""}<br>
             ${isAdmin?`
             <br>
-            <button onclick="editRating('${c.key}',${JSON.stringify(r).replace(/"/g,'&quot;')})">Edit</button>
-            <button onclick="del('${c.key}')">Delete</button>`:""}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                ${tokenToggleBtn}
+                <button onclick="editRating('${c.key}',${JSON.stringify(r).replace(/"/g,'&quot;')})">Edit Rating</button>
+            </div>
+            <button onclick="del('${c.key}')" style="margin-top: 5px;">Delete Rating</button>`:""}
         `;
         list.prepend(d);
     });
     
-    // UPDATE TOKEN VISUALS
     updateTokenDisplay(unclaimedTokenCount, claimedTokenCount);
   });
 }
