@@ -8,9 +8,10 @@
     <style>
         /* General Styles for a Dark, Dramatic Look */
         body {
+            /* Background Pattern (Subtle Dark Texture) */
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a0a0a"/><path fill="%231a1a1a" d="M0 0h50v50H0zM50 50h50v50H50z"/><path fill="%232a0000" opacity="0.1" d="M25 0h50v25H25zM0 25h25v50H0zM75 25h25v50H75zM25 75h50v25H25z"/></svg>') repeat;
             color: #eee;
-            font-family: 'Cinzel', serif; /* More dramatic standard font */
+            font-family: 'Cinzel', serif;
             padding: 20px;
             min-height: 100vh;
         }
@@ -25,19 +26,29 @@
                 12px 12px #aa0000;
             margin-bottom: 40px;
             letter-spacing: 5px;
-            animation: pulse 5s infinite alternate; /* Subtle animation */
+            animation: pulse 5s infinite alternate;
         }
         @keyframes pulse {
             from { text-shadow: 4px 4px #000; }
             to { text-shadow: 6px 6px #000; }
         }
+        /* American Traditional Style Border */
         .container {
             max-width: 800px;
             margin: 0 auto;
             background-color: #151515;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); /* Red glow */
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+
+            /* Traditional Border Styling */
+            border: 5px solid #000;
+            border-image: linear-gradient(
+                to bottom right, 
+                #000, #ff0000, #ffcc00, #ff0000, #000
+            ) 1; /* Black, Red, Gold, Red, Black */
+            padding: 20px 30px 40px 30px;
+            position: relative;
         }
         label {
             display: block;
@@ -51,7 +62,7 @@
             padding: 10px;
             margin-bottom: 15px;
             border-radius: 5px;
-            border: 1px solid #ff0000; /* Red border */
+            border: 2px solid #ff0000;
             background-color: #2a2a2a;
             color: #eee;
             font-size: 1em;
@@ -84,7 +95,7 @@
             margin-bottom: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
-            position: relative;
+            border: 1px solid #444; /* Subtle dark border */
         }
         .rating-header {
             display: flex;
@@ -94,12 +105,8 @@
         }
         .rating-item .name {
             font-weight: bold;
-            color: #ffcc00;
+            color: #ffcc00; /* Gold */
             font-size: 1.2em;
-        }
-        .rating-item .timestamp {
-            font-size: 0.8em;
-            color: #888;
         }
         .rating-scores div {
             margin-top: 5px;
@@ -114,36 +121,41 @@
             font-weight: bold;
         }
         .delete-btn {
-            background-color: #333;
+            background-color: #000;
             color: #ff0000;
-            border: 1px solid #ff0000;
+            border: 2px solid #ff0000;
             padding: 5px 10px;
-            display: none; /* Hidden by default */
+            font-size: 0.9em;
+        }
+        /* Discreet Admin Login Styles */
+        #adminToggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff0000;
+            color: #fff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+            line-height: 50px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 100;
         }
         .admin-controls {
-            margin-bottom: 20px;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
             padding: 15px;
             background-color: #330000;
+            border: 3px solid #000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
             border-radius: 5px;
-        }
-        /* Like/Dislike Styling */
-        .like-dislike-container {
-            margin-top: 10px;
-        }
-        .like-dislike-btn {
-            background: none;
-            border: none;
-            color: #ffaaaa;
-            font-size: 1.1em;
-            cursor: pointer;
-            margin-right: 15px;
-        }
-        .like-dislike-btn:hover {
-            color: #fff;
-        }
-        .like-dislike-count {
-            margin-left: 5px;
-            font-weight: bold;
+            width: 250px;
+            display: none; /* Hidden by default */
+            z-index: 99;
         }
     </style>
 </head>
@@ -151,14 +163,6 @@
 
     <div class="container">
         <h1>TiffanyTinx</h1>
-
-        <div class="admin-controls">
-            <i class="fas fa-lock" style="color:#ff0000;"></i>
-            <label for="adminPassword">Admin Password (to enable delete buttons):</label>
-            <input type="password" id="adminPassword" placeholder="Enter Admin Password">
-            <button id="adminLoginBtn">Login</button>
-            <span id="adminStatus" style="color: #ffcc00; margin-left: 10px;"></span>
-        </div>
 
         <div>
             <label for="name">Your Name (leave blank for Anonymous):</label>
@@ -210,6 +214,13 @@
         </div>
 
     </div>
+    
+    <div id="adminToggle"><i class="fas fa-anchor"></i></div> <div class="admin-controls" id="adminControls">
+        <label for="adminPassword">Admin Password:</label>
+        <input type="password" id="adminPassword" placeholder="Enter Password">
+        <button id="adminLoginBtn">Login</button>
+        <p id="adminStatus" style="color: #ffcc00; margin-top: 10px; font-size: 0.9em;"></p>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -236,8 +247,6 @@
         const ratingsRef = database.ref('ratings');
 
         // --- UTILITY FUNCTIONS ---
-
-        // Function to convert star count (with halves) to Unicode symbols
         function getStarSymbols(rating) {
             const fullStars = Math.floor(rating);
             const halfStar = (rating % 1 !== 0) ? '½' : '';
@@ -246,15 +255,22 @@
         }
 
         // --- ADMIN LOGIN LOGIC ---
+        document.getElementById('adminToggle').addEventListener('click', () => {
+            const controls = document.getElementById('adminControls');
+            controls.style.display = controls.style.display === 'block' ? 'none' : 'block';
+        });
+
         document.getElementById('adminLoginBtn').addEventListener('click', () => {
             const password = document.getElementById('adminPassword').value;
             const statusElement = document.getElementById('adminStatus');
 
             if (password === ADMIN_PASSWORD) {
                 isAdminLoggedIn = true;
-                statusElement.textContent = "Admin Logged In!";
+                statusElement.textContent = "Admin Logged In! Delete buttons enabled.";
                 statusElement.style.color = "#00ff00"; // Green for success
                 document.getElementById('adminPassword').value = '';
+                // Hide the login box after successful login
+                document.getElementById('adminControls').style.display = 'none';
                 displayRatings(); // Reload to show delete buttons
             } else {
                 isAdminLoggedIn = false;
@@ -266,7 +282,7 @@
 
         // --- INTERACTION HANDLERS ---
 
-        // Save Rating
+        // Save Rating (No changes here)
         document.getElementById('saveBtn').addEventListener('click', () => {
             const name = document.getElementById('name').value.trim() || "Anonymous";
             const type = document.getElementById('ratingType').value;
@@ -277,8 +293,8 @@
             const newRating = {
                 name,
                 type,
-                stars: parseFloat(stars), // Save as number for half stars
-                ppEnergy: parseInt(ppEnergy), // Save as number
+                stars: parseFloat(stars),
+                ppEnergy: parseInt(ppEnergy),
                 review,
                 likes: 0,
                 dislikes: 0,
@@ -289,9 +305,8 @@
                 if (error) {
                     alert("Error saving rating: " + error);
                 } else {
-                    // Clear form after successful save
                     document.getElementById('name').value = '';
-                    document.getElementById('stars').value = '3.0'; // Reset to a middle value
+                    document.getElementById('stars').value = '3.0';
                     document.getElementById('ppEnergy').value = '5';
                     document.getElementById('review').value = '';
                     document.getElementById('ratingType').value = 'Pim';
@@ -306,14 +321,14 @@
                 alert("You must log in as admin to delete reviews.");
                 return;
             }
-            if (confirm("Are you sure you want to delete this review?")) {
+            if (confirm("Are you sure you want to delete this review? This action cannot be undone.")) {
                 database.ref('ratings/' + id).remove().then(() => {
                     displayRatings();
                 });
             }
         };
 
-        // Like/Dislike Handler
+        // Like/Dislike Handler (No changes here)
         window.updateVote = (id, type) => {
             const ref = database.ref('ratings/' + id);
             ref.transaction((currentData) => {
@@ -329,7 +344,6 @@
                 if (error) {
                     console.log('Transaction failed: ', error);
                 } else if (committed) {
-                    // Re-render the list to show updated count immediately
                     displayRatings();
                 }
             });
@@ -340,7 +354,6 @@
         function displayRatings() {
             ratingsRef.orderByChild('timestamp').limitToLast(50).once('value', snapshot => {
                 const ratingList = document.getElementById('ratingList');
-                // Use reverse order for newest first
                 const ratingsArray = [];
                 snapshot.forEach(child => {
                     ratingsArray.push({ id: child.key, ...child.val() });
@@ -352,9 +365,9 @@
                     const div = document.createElement('div');
                     div.className = 'rating-item';
 
-                    // Prepare scores
                     const starSymbols = getStarSymbols(data.stars);
                     const ppEnergyText = `${data.ppEnergy}"`;
+                    // Delete button is only included in the HTML if isAdminLoggedIn is TRUE
                     const deleteButton = isAdminLoggedIn
                         ? `<button class="delete-btn" onclick="deleteRating('${data.id}')"><i class="fas fa-trash-alt"></i> Delete</button>`
                         : '';
@@ -366,8 +379,8 @@
                         </div>
                         <p style="color: #ffaaaa;">Subject: ${data.type}</p>
                         <div class="rating-scores">
-                            <div><span class="stars">${starSymbols}</span> **Stars** (${data.stars}/5.0)</div>
-                            <div><span class="pp-energy">${ppEnergyText}</span> **PP Energy** (${data.ppEnergy}/10")</div>
+                            <div><span class="stars">${starSymbols}</span> Stars (${data.stars}/5.0)</div>
+                            <div><span class="pp-energy">${ppEnergyText}</span> PP Energy (${data.ppEnergy}/10")</div>
                         </div>
                         <p>${data.review ? 'Comment: ' + data.review : ''}</p>
 
