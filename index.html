@@ -182,7 +182,7 @@
             display: inline-block;
         }
 
-        /* INDIVIDUAL TOKEN (CUSTOM ICON STYLE) */
+        /* INDIVIDUAL TOKEN (CUSTOM ICON STYLE: Bag with Powder) */
         .token-individual {
             font-size: 1em;
             color: #ccc;
@@ -190,8 +190,8 @@
             padding: 0 5px;
         }
         .token-individual .token-base {
-            /* Base icon changed to file for a flatter packet look */
-            color: #aaa; /* Lighter gray/silver packet */
+            /* Base icon: Shopping Bag for a sack/bag look */
+            color: #666; /* Darker grey for the plastic bag itself */
             font-size: 1.6em;
         }
         .token-individual .token-powder {
@@ -199,9 +199,11 @@
             color: #fff; 
             font-size: 0.6em;
             position: absolute;
-            top: 4px;
+            top: 10px; /* Adjusted to sit lower inside the bag */
             left: 50%;
             transform: translateX(-50%);
+            /* Add a subtle shadow to make it look like powder inside a bag */
+            text-shadow: 0 0 2px rgba(0, 0, 0, 0.5); 
         }
 
         /* CLAIMED BUNDLE (Large Icon) */
@@ -283,7 +285,9 @@
 
     </div>
 
-    <div id="tinxToggle" class="secret-toggle"><i class="fas fa-file-invoice"></i></div> <div id="adminToggle" class="secret-toggle"><i class="fas fa-anchor"></i></div>
+    <div id="tinxToggle" class="secret-toggle"><i class="fas fa-shopping-bag"></i></div> 
+    
+    <div id="adminToggle" class="secret-toggle"><i class="fas fa-anchor"></i></div>
 
     <div class="secret-controls" id="adminControls">
         <label for="adminPassword">Admin Password:</label>
@@ -500,10 +504,10 @@
             if (isBundle) {
                 return `<span class="token-icon token-bundle"><i class="fas fa-gift"></i></span>`; // Using gift for a large, completed bundle
             }
-            // Icon for an individual token (Custom plastic packet w/ white powder)
+            // Icon for an individual token (Custom plastic sack w/ white powder)
             return `
                 <span class="token-icon token-individual">
-                    <i class="fas fa-file-alt token-base"></i>
+                    <i class="fas fa-bag-shopping token-base"></i>
                     <i class="fas fa-circle token-powder"></i>
                 </span>
             `;
@@ -593,7 +597,7 @@
                     const tokenStatus = data.isToken 
                         ? (data.claimed 
                             ? `<span style="color: #444; font-size: 0.9em; margin-left: 10px;">Token: Claimed <i class="fas fa-box-open"></i></span>`
-                            : `<span style="color: #fff; font-size: 0.9em; margin-left: 10px;">Token: Banked <i class="fas fa-file-alt"></i></span>`
+                            : `<span style="color: #fff; font-size: 0.9em; margin-left: 10px;">Token: Banked <i class="fas fa-bag-shopping"></i></span>`
                           )
                         : '';
 
