@@ -2,17 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TiffanyTinx Ratings</title>
+<title>TiffanyTinx Ratings - The Vault</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght=400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
+/* Base Styles */
 body{
   background:radial-gradient(circle at top,#2b0000,#000);
   color:#eee;
   font-family:'Cinzel',serif;
   padding:20px;
+  min-height: 100vh;
+  padding-bottom: 100px; /* Space for the fixed controls */
 }
 .container{
   max-width:820px;
@@ -76,6 +79,7 @@ input,select,textarea{
   font-size:1.6em;
   cursor:pointer;
   box-shadow:0 0 25px red;
+  z-index: 100; /* Ensure toggles are on top */
 }
 #adminToggle{right:20px}
 #tinxToggle{right:90px;background:#ff66cc}
@@ -90,7 +94,10 @@ input,select,textarea{
   border:2px solid #ff3b3b;
   display:none;
   width:260px;
+  z-index: 99; /* Ensure panels are below toggles */
 }
+#tinxPanel{right:90px}
+
 button{
   margin-top:10px;
   padding:10px;
@@ -113,6 +120,57 @@ button{
   from{opacity:0;transform:translateY(100%)}
   25%{opacity:1}
   to{opacity:0;transform:translateY(-100%)}
+}
+
+/* --- TOKEN SYSTEM STYLES (RESTORED) --- */
+#tokenDisplay {
+    margin-top: 50px;
+    padding: 20px 0;
+    border-top: 2px solid #ffcc00;
+    text-align: center;
+    font-size: 1.8em;
+    color: #ffcc00;
+}
+.token-icon {
+    margin: 0 8px;
+    display: inline-block;
+}
+
+/* INDIVIDUAL TOKEN (Plastic Bag with Powder) */
+.token-individual {
+    font-size: 1em;
+    color: #ccc;
+    position: relative;
+    padding: 0 5px;
+}
+.token-individual .token-base {
+    color: #666; /* Darker grey for the plastic bag itself */
+    font-size: 1.6em;
+}
+.token-individual .token-powder {
+    color: #fff; 
+    font-size: 0.6em;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5); 
+}
+
+/* CLAIMED BUNDLE (Large Icon) */
+.token-bundle {
+    font-size: 2.5em;
+    color: #ffcc00;
+    margin: 0 15px;
+    border-right: 2px solid #444;
+    padding-right: 15px;
+}
+.token-bundle:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+.token-bundle-claimed {
+    color: #444;
 }
 </style>
 </head>
@@ -155,13 +213,16 @@ button{
 <button id="saveBtn"><i class="fas fa-heart"></i> SAVE RATING</button>
 
 <div id="list"></div>
+
+<div id="tokenDisplay">
+    <span id="sackIcons"></span>
 </div>
 
-<!-- TOGGLES -->
+</div>
+
 <div id="adminToggle" class="secret-toggle"><i class="fas fa-anchor"></i></div>
 <div id="tinxToggle" class="secret-toggle"><i class="fas fa-gift"></i></div>
 
-<!-- PANELS -->
 <div id="adminPanel" class="panel">
   <label>Admin Password</label>
   <input type="password" id="adminPass">
@@ -172,7 +233,7 @@ button{
 <div id="tinxPanel" class="panel" style="right:90px">
   <label>Tinx Password</label>
   <input type="password" id="tinxPass">
-  <button id="tinxLogin">Login</button>
+  <button id="tinxClaimBtn">Claim Bundle</button> 
   <p id="tinxStatus"></p>
 </div>
 
@@ -190,27 +251,67 @@ firebase.initializeApp({
 const db=firebase.database();
 const ref=db.ref("ratings");
 
+// --- CONFIGURATION CONSTANTS (Adjusted for the token system) ---
 const ADMIN_PASSWORD="ppeanile";
-const TINX_PASSWORD="tinxrules";
+// Keeping your current Tinx password for this reply to avoid confusion
+const TINX_PASSWORD="tinxrules"; 
+const TOKEN_BUNDLE_SIZE = 5;
+
 let isAdmin=false,isTinx=false;
 
+// --- TOGGLE HANDLERS ---
 adminToggle.onclick=()=>adminPanel.style.display=adminPanel.style.display==="block"?"none":"block";
 tinxToggle.onclick=()=>tinxPanel.style.display=tinxPanel.style.display==="block"?"none":"block";
 
+// --- LOGIN LOGIC ---
 adminLogin.onclick=()=>{
   if(adminPass.value===ADMIN_PASSWORD){
     isAdmin=true;
     adminStatus.textContent="Admin enabled";
     render();
+    adminPanel.style.display="none";
+  } else {
+    adminStatus.textContent="Incorrect Password";
   }
 };
 
-tinxLogin.onclick=()=>{
-  if(tinxPass.value===TINX_PASSWORD){
-    isTinx=true;
-    tinxStatus.textContent="Tinx enabled";
-    render();
-  }
+// --- TINX CLAIM LOGIC (Fully Restored) ---
+tinxClaimBtn.onclick = () => {
+    const password = tinxPass.value;
+    if (password !== TINX_PASSWORD) {
+        tinxStatus.textContent = "Incorrect Tinx Password.";
+        return;
+    }
+    
+    tinxStatus.textContent = "Checking for claimable bundles...";
+
+    ref.orderByChild('token').equalTo(true).once('value', snapshot => {
+        const unclaimedTokens = [];
+        snapshot.forEach(child => {
+            const tokenData = child.val();
+            if (!tokenData.claimed) {
+                unclaimedTokens.push(child.key);
+            }
+        });
+
+        if (unclaimedTokens.length >= TOKEN_BUNDLE_SIZE) {
+            const updates = {};
+            for (let i = 0; i < TOKEN_BUNDLE_SIZE; i++) {
+                updates[unclaimedTokens[i] + '/claimed'] = true;
+            }
+            
+            db.ref('ratings').update(updates).then(() => {
+                tinxStatus.textContent = `SUCCESS! Claimed ${TOKEN_BUNDLE_SIZE} tokens.`;
+                tinxPass.value = '';
+                render();
+            }).catch(error => {
+                tinxStatus.textContent = "Error claiming bundle: " + error.message;
+            });
+
+        } else {
+            tinxStatus.textContent = `Failed. Only ${unclaimedTokens.length} of ${TOKEN_BUNDLE_SIZE} tokens available.`;
+        }
+    });
 };
 
 function flame(){
@@ -220,6 +321,7 @@ function flame(){
   setTimeout(()=>f.remove(),2000);
 }
 
+// --- SAVE RATING LOGIC ---
 saveBtn.onclick=()=>{
   const s=parseInt(stars.value);
   ref.push({
@@ -228,18 +330,17 @@ saveBtn.onclick=()=>{
     stars:s,
     pp:parseInt(pp.value),
     review:review.value,
-    token:s===5,
-    claimed:false,
+    // Note: The token property must be 'token: true/false' for the claiming logic to work
+    token: s===5, 
+    claimed: s===5 ? false : undefined, // Only 5-star reviews can be claimed
     time:Date.now()
   });
   if(s===5) flame();
   name.value="";review.value="";
 };
 
+// --- UTILITY/ADMIN FUNCTIONS ---
 window.del=id=>isAdmin&&confirm("Delete?")&&ref.child(id).remove();
-window.claim=id=>isTinx&&ref.child(id).update({claimed:true});
-window.unclaim=id=>isTinx&&ref.child(id).update({claimed:false});
-
 window.editRating=(id,r)=>{
   if(!isAdmin) return;
   const n=prompt("Name:",r.name)||r.name;
@@ -250,29 +351,111 @@ window.editRating=(id,r)=>{
   ref.child(id).update({name:n,character:c,stars:s,pp:p,review:rev});
 };
 
+// --- TOKEN VISUALS (RESTORED) ---
+function renderTokenIcon(isClaimed, isBundle) {
+    if (isClaimed) {
+        return `<span class="token-icon token-bundle token-bundle-claimed"><i class="fas fa-box-open"></i></span>`;
+    }
+    if (isBundle) {
+        return `<span class="token-icon token-bundle"><i class="fas fa-gift"></i></span>`;
+    }
+    return `
+        <span class="token-icon token-individual">
+            <i class="fas fa-bag-shopping token-base"></i>
+            <i class="fas fa-circle token-powder"></i>
+        </span>
+    `;
+}
+
+function updateTokenDisplay(unclaimedCount, claimedCount) {
+    const sackIconsElement = document.getElementById('sackIcons');
+    sackIconsElement.innerHTML = '';
+    
+    const currentSacks = unclaimedCount % TOKEN_BUNDLE_SIZE;
+    
+    let bundlesRendered = 0;
+
+    // 1. Render claimed bundles (empty boxes)
+    for (let i = 0; i < claimedCount; i++) {
+        sackIconsElement.innerHTML += renderTokenIcon(true, true);
+        bundlesRendered++;
+    }
+
+    // 2. Render current full bundles (unclaimed full sets)
+    for (let i = 0; i < Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE); i++) {
+        sackIconsElement.innerHTML += renderTokenIcon(false, true);
+        bundlesRendered++;
+    }
+    
+    // 3. Display Separator
+    if (bundlesRendered > 0 && currentSacks > 0) {
+        const separator = document.createElement('span');
+        separator.textContent = ' | ';
+        sackIconsElement.appendChild(separator);
+    }
+
+    // 4. Display Individual Tokens (Tally Marks/Bags)
+    for (let i = 0; i < currentSacks; i++) {
+        sackIconsElement.innerHTML += renderTokenIcon(false, false);
+    }
+
+    if (unclaimedCount === 0 && claimedCount === 0) {
+        sackIconsElement.textContent = 'No tokens banked.';
+        sackIconsElement.style.fontSize = '1em';
+    } else {
+        sackIconsElement.style.fontSize = '1.8em';
+    }
+}
+
+
+// --- RENDER FUNCTION (Modified to count tokens first) ---
 function render(){
+  let unclaimedTokenCount = 0;
+  let claimedTokenCount = 0;
+
   ref.limitToLast(25).once("value",snap=>{
     list.innerHTML="";
-    snap.forEach(c=>{
-      const r=c.val();
-      const d=document.createElement("div");
-      d.className="rating";
-      d.innerHTML=`
-<b>${r.name}</b> (${r.character})<br>
-<span class="stars">${"★".repeat(r.stars)}</span><br>
-PP: ${r.pp}<br>
-${r.review||""}<br>
-${r.token?`🎟 Token: ${r.claimed?"CLAIMED":"UNCLAIMED"}
-${isTinx?`<button onclick="${r.claimed?"unclaim":"claim"}('${c.key}')">${r.claimed?"Unclaim":"Claim"}</button>`:""}`:""}
-${isAdmin?`
-<br>
-<button onclick="editRating('${c.key}',${JSON.stringify(r).replace(/"/g,'&quot;')})">Edit</button>
-<button onclick="del('${c.key}')">Delete</button>`:""}
-`;
-      list.prepend(d);
+    
+    snap.forEach(c => {
+        const r = c.val();
+        
+        // COUNT TOKENS
+        if (r.token) {
+            if (r.claimed) {
+                claimedTokenCount++;
+            } else {
+                unclaimedTokenCount++;
+            }
+        }
+        
+        // RENDER RATING LIST ITEM
+        const d=document.createElement("div");
+        d.className="rating";
+        
+        // Simplified token status display (no individual claim buttons needed for now)
+        const tokenStatus = r.token 
+            ? `<span style="color:${r.claimed?'#555':'#fff'}; font-weight:bold;">🎟 Token: ${r.claimed?"CLAIMED":"UNCLAIMED"}</span>`
+            : '';
+        
+        d.innerHTML=`
+            <b>${r.name}</b> (${r.character}) ${tokenStatus}<br>
+            <span class="stars">${"★".repeat(r.stars)}</span><br>
+            PP: ${r.pp}<br>
+            ${r.review||""}<br>
+            ${isAdmin?`
+            <br>
+            <button onclick="editRating('${c.key}',${JSON.stringify(r).replace(/"/g,'&quot;')})">Edit</button>
+            <button onclick="del('${c.key}')">Delete</button>`:""}
+        `;
+        list.prepend(d);
     });
+    
+    // UPDATE TOKEN VISUALS
+    updateTokenDisplay(unclaimedTokenCount, claimedTokenCount);
   });
 }
+
+// Initial/real-time render call
 ref.on("value",render);
 </script>
 
