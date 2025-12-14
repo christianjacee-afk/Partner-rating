@@ -1,189 +1,394 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>TiffanyTinx Ratings</title>
-  <!-- Google Font for heavy metal style -->
-  <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background: linear-gradient(135deg, #111, #222);
-      color: #eee;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    h1 {
-      font-family: 'Metal Mania', cursive;
-      font-size: 5em;
-      text-align: center;
-      color: #ff0000;
-      text-shadow:
-        3px 3px #000,
-        6px 6px #550000,
-        9px 9px #aa0000;
-      margin-bottom: 40px;
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px;
-      font-weight: bold;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      border: none;
-      font-size: 1.1em;
-    }
-    button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      background-color: #ff0000;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-      margin-right: 10px;
-      font-size: 1.1em;
-    }
-    .rating-list {
-      margin-top: 40px;
-      border-top: 2px solid #444;
-      padding-top: 20px;
-    }
-    .rating-item {
-      background-color: #222;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 5px;
-      font-size: 1.1em;
-    }
-    .rating-item span {
-      font-weight: bold;
-      color: #ffcc00;
-    }
-    .stars {
-      color: gold;
-      font-size: 1.5em;
-      display: inline-block;
-      margin-right: 8px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>TiffanyTinx Ratings - The Vault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* General Styles for a Dark, Dramatic Look */
+        body {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%230a0a0a"/><path fill="%231a1a1a" d="M0 0h50v50H0zM50 50h50v50H50z"/><path fill="%232a0000" opacity="0.1" d="M25 0h50v25H25zM0 25h25v50H0zM75 25h25v50H75zM25 75h50v25H25z"/></svg>') repeat;
+            color: #eee;
+            font-family: 'Cinzel', serif; /* More dramatic standard font */
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            font-family: 'Metal Mania', cursive;
+            font-size: 6em;
+            text-align: center;
+            color: #ff0000;
+            text-shadow:
+                4px 4px #000,
+                8px 8px #550000,
+                12px 12px #aa0000;
+            margin-bottom: 40px;
+            letter-spacing: 5px;
+            animation: pulse 5s infinite alternate; /* Subtle animation */
+        }
+        @keyframes pulse {
+            from { text-shadow: 4px 4px #000; }
+            to { text-shadow: 6px 6px #000; }
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #151515;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); /* Red glow */
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+            color: #ffaaaa;
+            text-transform: uppercase;
+        }
+        input[type="text"], input[type="password"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ff0000; /* Red border */
+            background-color: #2a2a2a;
+            color: #eee;
+            font-size: 1em;
+            box-shadow: inset 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff0000;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #aa0000;
+        }
+        /* Rating List Styling */
+        .rating-list {
+            margin-top: 50px;
+            border-top: 2px solid #550000;
+            padding-top: 20px;
+        }
+        .rating-item {
+            background-color: #222;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+            position: relative;
+        }
+        .rating-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .rating-item .name {
+            font-weight: bold;
+            color: #ffcc00;
+            font-size: 1.2em;
+        }
+        .rating-item .timestamp {
+            font-size: 0.8em;
+            color: #888;
+        }
+        .rating-scores div {
+            margin-top: 5px;
+        }
+        .stars {
+            color: gold;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        .pp-energy {
+            color: #00ccff; /* Blue for PP Energy */
+            font-weight: bold;
+        }
+        .delete-btn {
+            background-color: #333;
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            padding: 5px 10px;
+            display: none; /* Hidden by default */
+        }
+        .admin-controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #330000;
+            border-radius: 5px;
+        }
+        /* Like/Dislike Styling */
+        .like-dislike-container {
+            margin-top: 10px;
+        }
+        .like-dislike-btn {
+            background: none;
+            border: none;
+            color: #ffaaaa;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        .like-dislike-btn:hover {
+            color: #fff;
+        }
+        .like-dislike-count {
+            margin-left: 5px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>TiffanyTinx</h1>
+    <div class="container">
+        <h1>TiffanyTinx</h1>
 
-  <div>
-    <label for="name">Your Name (leave blank for anonymous):</label>
-    <input type="text" id="name" placeholder="Enter your name">
+        <div class="admin-controls">
+            <i class="fas fa-lock" style="color:#ff0000;"></i>
+            <label for="adminPassword">Admin Password (to enable delete buttons):</label>
+            <input type="password" id="adminPassword" placeholder="Enter Admin Password">
+            <button id="adminLoginBtn">Login</button>
+            <span id="adminStatus" style="color: #ffcc00; margin-left: 10px;"></span>
+        </div>
 
-    <label for="ratingType">Rating Type:</label>
-    <select id="ratingType">
-      <option value="Pim">Pim</option>
-      <option value="Charlie">Charlie</option>
-      <option value="Glep">Glep</option>
-      <option value="Mr Boss">Mr Boss</option>
-    </select>
+        <div>
+            <label for="name">Your Name (leave blank for Anonymous):</label>
+            <input type="text" id="name" placeholder="Enter your name">
 
-    <label for="stars">Stars (1–5):</label>
-    <select id="stars">
-      <option value="1">★</option>
-      <option value="2">★★</option>
-      <option value="3">★★★</option>
-      <option value="4">★★★★</option>
-      <option value="5">★★★★★</option>
-    </select>
+            <label for="ratingType">Rating Subject:</label>
+            <select id="ratingType">
+                <option value="Pim">Pim</option>
+                <option value="Charlie">Charlie</option>
+                <option value="Glep">Glep</option>
+                <option value="Mr Boss">Mr Boss</option>
+            </select>
 
-    <label for="review">Review:</label>
-    <textarea id="review" rows="3" placeholder="Leave a comment..."></textarea>
+            <label for="stars">Stars (1.0 to 5.0):</label>
+            <select id="stars">
+                <option value="1.0">1.0 ★</option>
+                <option value="1.5">1.5 ★½</option>
+                <option value="2.0">2.0 ★★</option>
+                <option value="2.5">2.5 ★★½</option>
+                <option value="3.0">3.0 ★★★</option>
+                <option value="3.5">3.5 ★★★½</option>
+                <option value="4.0">4.0 ★★★★</option>
+                <option value="4.5">4.5 ★★★★½</option>
+                <option value="5.0">5.0 ★★★★★</option>
+            </select>
 
-    <button id="saveBtn">Save Rating</button>
-    <button id="clearBtn">Clear All</button>
-  </div>
+            <label for="ppEnergy">PP Energy (1" to 10"):</label>
+            <select id="ppEnergy">
+                <option value="1">1"</option>
+                <option value="2">2"</option>
+                <option value="3">3"</option>
+                <option value="4">4"</option>
+                <option value="5">5"</option>
+                <option value="6">6"</option>
+                <option value="7">7"</option>
+                <option value="8">8"</option>
+                <option value="9">9"</option>
+                <option value="10">10"</option>
+            </select>
 
-  <div class="rating-list" id="ratingList">
-    <h2>Saved Ratings:</h2>
-  </div>
+            <label for="review">Review/Comment:</label>
+            <textarea id="review" rows="3" placeholder="Leave a comment..."></textarea>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+            <button id="saveBtn"><i class="fas fa-save"></i> Save Rating</button>
+        </div>
 
-  <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
-      authDomain: "tiffanytinx-bbf9c.firebaseapp.com",
-      databaseURL: "https://tiffanytinx-bbf9c-default-rtdb.firebaseio.com",
-      projectId: "tiffanytinx-bbf9c",
-      storageBucket: "tiffanytinx-bbf9c.firebasestorage.app",
-      messagingSenderId: "300543672766",
-      appId: "1:300543672766:web:cae10d6758efee7f9ff9ef",
-      measurementId: "G-Q6WTK15T2K"
-    };
+        <div class="rating-list" id="ratingList">
+            <h2><i class="fas fa-scroll"></i> The Vault of Reviews:</h2>
+        </div>
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const ratingsRef = database.ref('ratings');
+    </div>
 
-    // Save rating
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      const name = document.getElementById('name').value.trim() || "Anonymous";
-      const type = document.getElementById('ratingType').value;
-      const stars = document.getElementById('stars').value;
-      const review = document.getElementById('review').value;
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-      const newRating = {
-        name,
-        type,
-        stars,
-        review,
-        timestamp: Date.now()
-      };
+    <script>
+        // --- CONFIGURATION ---
+        const ADMIN_PASSWORD = "ppeanile"; // YOUR ADMIN PASSWORD
+        let isAdminLoggedIn = false;
 
-      ratingsRef.push(newRating, (error) => {
-        if (error) {
-          alert("Error saving rating: " + error);
-        } else {
-          displayRatings();
-          document.getElementById('name').value = '';
-          document.getElementById('stars').value = '1';
-          document.getElementById('review').value = '';
-          document.getElementById('ratingType').value = 'Pim';
+        // Firebase config (Use your existing config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
+            authDomain: "tiffanytinx-bbf9c.firebaseapp.com",
+            databaseURL: "https://tiffanytinx-bbf9c-default-rtdb.firebaseio.com",
+            projectId: "tiffanytinx-bbf9c",
+            storageBucket: "tiffanytinx-bbf9c.firebasestorage.app",
+            messagingSenderId: "300543672766",
+            appId: "1:300543672766:web:cae10d6758efee7f9ff9ef",
+            measurementId: "G-Q6WTK15T2K"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const ratingsRef = database.ref('ratings');
+
+        // --- UTILITY FUNCTIONS ---
+
+        // Function to convert star count (with halves) to Unicode symbols
+        function getStarSymbols(rating) {
+            const fullStars = Math.floor(rating);
+            const halfStar = (rating % 1 !== 0) ? '½' : '';
+            const emptyStars = 5 - Math.ceil(rating);
+            return '★'.repeat(fullStars) + halfStar + '☆'.repeat(emptyStars);
         }
-      });
-    });
 
-    // Display ratings
-    function displayRatings() {
-      ratingsRef.once('value', snapshot => {
-        const ratingList = document.getElementById('ratingList');
-        ratingList.innerHTML = '<h2>Saved Ratings:</h2>';
-        snapshot.forEach(child => {
-          const data = child.val();
-          const div = document.createElement('div');
-          div.className = 'rating-item';
-          div.innerHTML = `
-            <span>${data.name}</span> | ${data.type} <span class="stars">${'★'.repeat(data.stars)}</span><br>
-            ${data.review ? 'Comment: ' + data.review : ''}
-          `;
-          ratingList.appendChild(div);
+        // --- ADMIN LOGIN LOGIC ---
+        document.getElementById('adminLoginBtn').addEventListener('click', () => {
+            const password = document.getElementById('adminPassword').value;
+            const statusElement = document.getElementById('adminStatus');
+
+            if (password === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
+                statusElement.textContent = "Admin Logged In!";
+                statusElement.style.color = "#00ff00"; // Green for success
+                document.getElementById('adminPassword').value = '';
+                displayRatings(); // Reload to show delete buttons
+            } else {
+                isAdminLoggedIn = false;
+                statusElement.textContent = "Incorrect Password.";
+                statusElement.style.color = "#ff0000"; // Red for failure
+                document.getElementById('adminPassword').value = '';
+            }
         });
-      });
-    }
 
-    // Clear all ratings
-    document.getElementById('clearBtn').addEventListener('click', () => {
-      if (confirm("Are you sure you want to clear all ratings?")) {
-        ratingsRef.remove().then(() => displayRatings());
-      }
-    });
+        // --- INTERACTION HANDLERS ---
 
-    // Load ratings on page load
-    displayRatings();
-  </script>
+        // Save Rating
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            const name = document.getElementById('name').value.trim() || "Anonymous";
+            const type = document.getElementById('ratingType').value;
+            const stars = document.getElementById('stars').value;
+            const ppEnergy = document.getElementById('ppEnergy').value;
+            const review = document.getElementById('review').value;
+
+            const newRating = {
+                name,
+                type,
+                stars: parseFloat(stars), // Save as number for half stars
+                ppEnergy: parseInt(ppEnergy), // Save as number
+                review,
+                likes: 0,
+                dislikes: 0,
+                timestamp: Date.now()
+            };
+
+            ratingsRef.push(newRating, (error) => {
+                if (error) {
+                    alert("Error saving rating: " + error);
+                } else {
+                    // Clear form after successful save
+                    document.getElementById('name').value = '';
+                    document.getElementById('stars').value = '3.0'; // Reset to a middle value
+                    document.getElementById('ppEnergy').value = '5';
+                    document.getElementById('review').value = '';
+                    document.getElementById('ratingType').value = 'Pim';
+                    displayRatings();
+                }
+            });
+        });
+
+        // Delete Handler (Bound to individual buttons later)
+        window.deleteRating = (id) => {
+            if (!isAdminLoggedIn) {
+                alert("You must log in as admin to delete reviews.");
+                return;
+            }
+            if (confirm("Are you sure you want to delete this review?")) {
+                database.ref('ratings/' + id).remove().then(() => {
+                    displayRatings();
+                });
+            }
+        };
+
+        // Like/Dislike Handler
+        window.updateVote = (id, type) => {
+            const ref = database.ref('ratings/' + id);
+            ref.transaction((currentData) => {
+                if (currentData) {
+                    if (type === 'like') {
+                        currentData.likes = (currentData.likes || 0) + 1;
+                    } else if (type === 'dislike') {
+                        currentData.dislikes = (currentData.dislikes || 0) + 1;
+                    }
+                }
+                return currentData;
+            }, (error, committed) => {
+                if (error) {
+                    console.log('Transaction failed: ', error);
+                } else if (committed) {
+                    // Re-render the list to show updated count immediately
+                    displayRatings();
+                }
+            });
+        };
+
+
+        // --- DISPLAY RATINGS ---
+        function displayRatings() {
+            ratingsRef.orderByChild('timestamp').limitToLast(50).once('value', snapshot => {
+                const ratingList = document.getElementById('ratingList');
+                // Use reverse order for newest first
+                const ratingsArray = [];
+                snapshot.forEach(child => {
+                    ratingsArray.push({ id: child.key, ...child.val() });
+                });
+
+                ratingList.innerHTML = '<h2><i class="fas fa-scroll"></i> The Vault of Reviews:</h2>';
+
+                ratingsArray.reverse().forEach(data => {
+                    const div = document.createElement('div');
+                    div.className = 'rating-item';
+
+                    // Prepare scores
+                    const starSymbols = getStarSymbols(data.stars);
+                    const ppEnergyText = `${data.ppEnergy}"`;
+                    const deleteButton = isAdminLoggedIn
+                        ? `<button class="delete-btn" onclick="deleteRating('${data.id}')"><i class="fas fa-trash-alt"></i> Delete</button>`
+                        : '';
+
+                    div.innerHTML = `
+                        <div class="rating-header">
+                            <span class="name">${data.name}</span>
+                            <span class="timestamp">${new Date(data.timestamp).toLocaleString()}</span>
+                        </div>
+                        <p style="color: #ffaaaa;">Subject: ${data.type}</p>
+                        <div class="rating-scores">
+                            <div><span class="stars">${starSymbols}</span> **Stars** (${data.stars}/5.0)</div>
+                            <div><span class="pp-energy">${ppEnergyText}</span> **PP Energy** (${data.ppEnergy}/10")</div>
+                        </div>
+                        <p>${data.review ? 'Comment: ' + data.review : ''}</p>
+
+                        <div class="like-dislike-container">
+                            <button class="like-dislike-btn" onclick="updateVote('${data.id}', 'like')">
+                                <i class="fas fa-thumbs-up"></i> <span class="like-dislike-count">${data.likes || 0}</span>
+                            </button>
+                            <button class="like-dislike-btn" onclick="updateVote('${data.id}', 'dislike')">
+                                <i class="fas fa-thumbs-down"></i> <span class="like-dislike-count">${data.dislikes || 0}</span>
+                            </button>
+                            ${deleteButton}
+                        </div>
+                    `;
+                    ratingList.appendChild(div);
+                });
+            });
+        }
+
+        // Load ratings on page load
+        displayRatings();
+    </script>
 
 </body>
 </html>
