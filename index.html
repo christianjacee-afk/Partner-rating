@@ -97,19 +97,10 @@
             box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
             border: 1px solid #444; /* Subtle dark border */
         }
-        .rating-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
         .rating-item .name {
             font-weight: bold;
             color: #ffcc00; /* Gold */
             font-size: 1.2em;
-        }
-        .rating-scores div {
-            margin-top: 5px;
         }
         .stars {
             color: gold;
@@ -132,11 +123,10 @@
             padding: 5px 10px;
             font-size: 0.9em;
         }
-        /* Discreet Admin Login Styles */
-        #adminToggle {
+        /* Discreet Login Styles */
+        .secret-toggle {
             position: fixed;
             bottom: 20px;
-            right: 20px;
             background-color: #ff0000;
             color: #fff;
             border-radius: 50%;
@@ -149,18 +139,57 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             z-index: 100;
         }
-        .admin-controls {
+        #adminToggle {
+            right: 20px;
+        }
+        #tinxToggle {
+            right: 80px; /* Moved next to admin toggle */
+            font-size: 1.2em;
+            background-color: #fff;
+            color: #000;
+            line-height: 40px;
+            padding-top: 5px;
+        }
+        .secret-controls {
             position: fixed;
             bottom: 80px;
-            right: 20px;
             padding: 15px;
             background-color: #330000;
             border: 3px solid #000;
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
             border-radius: 5px;
             width: 250px;
-            display: none; /* Hidden by default */
+            display: none;
             z-index: 99;
+        }
+        #adminControls {
+            right: 20px;
+        }
+        #tinxControls {
+            right: 80px;
+        }
+
+        /* Token Display */
+        #tokenDisplay {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #000000;
+            border: 2px solid #ffcc00;
+            color: #ffcc00;
+            text-align: center;
+            font-size: 1.5em;
+            border-radius: 5px;
+        }
+        .sack-icon {
+            font-size: 1.2em;
+            margin: 0 3px;
+            display: inline-block;
+        }
+        .sack-full {
+            color: #fff; /* White sack */
+        }
+        .sack-empty {
+            color: #444; /* Gray empty sack */
         }
     </style>
 </head>
@@ -215,19 +244,32 @@
             <button id="saveBtn"><i class="fas fa-save"></i> Save Rating</button>
         </div>
 
+        <div id="tokenDisplay">
+            **Banked Tokens:** <span id="sackIcons"></span>
+        </div>
+
         <div class="rating-list" id="ratingList">
             <h2><i class="fas fa-scroll"></i> The Vault of Reviews:</h2>
         </div>
 
     </div>
 
-    <div id="adminToggle"><i class="fas fa-anchor"></i></div>
+    <div id="tinxToggle" class="secret-toggle"><i class="fas fa-shopping-bag"></i></div> 
+    
+    <div id="adminToggle" class="secret-toggle"><i class="fas fa-anchor"></i></div>
 
-    <div class="admin-controls" id="adminControls">
+    <div class="secret-controls" id="adminControls">
         <label for="adminPassword">Admin Password:</label>
         <input type="password" id="adminPassword" placeholder="Enter Password">
         <button id="adminLoginBtn">Login</button>
         <p id="adminStatus" style="color: #ffcc00; margin-top: 10px; font-size: 0.9em;"></p>
+    </div>
+
+    <div class="secret-controls" id="tinxControls">
+        <label for="tinxPassword">Tinx Password:</label>
+        <input type="password" id="tinxPassword" placeholder="Enter Password">
+        <button id="tinxClaimBtn">Claim Bundle</button>
+        <p id="tinxStatus" style="color: #ffcc00; margin-top: 10px; font-size: 0.9em;"></p>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -236,6 +278,9 @@
     <script>
         // --- CONFIGURATION ---
         const ADMIN_PASSWORD = "ppeanile"; // YOUR ADMIN PASSWORD
+        const TINX_PASSWORD = "punchers";  // **UPDATED TINX PASSWORD**
+        const TOKEN_BUNDLE_SIZE = 5;       // Number of tokens required for a claim
+
         let isAdminLoggedIn = false;
 
         // Firebase config (Use your existing config)
@@ -262,12 +307,21 @@
             return '★'.repeat(fullStars) + halfStar + '☆'.repeat(emptyStars);
         }
 
-        // --- ADMIN LOGIN LOGIC ---
+        // --- DISCREET CONTROL LOGIC ---
         document.getElementById('adminToggle').addEventListener('click', () => {
             const controls = document.getElementById('adminControls');
             controls.style.display = controls.style.display === 'block' ? 'none' : 'block';
+            document.getElementById('tinxControls').style.display = 'none'; // Hide other if active
         });
 
+        document.getElementById('tinxToggle').addEventListener('click', () => {
+            const controls = document.getElementById('tinxControls');
+            controls.style.display = controls.style.display === 'block' ? 'none' : 'block';
+            document.getElementById('adminControls').style.display = 'none'; // Hide other if active
+        });
+
+
+        // --- ADMIN LOGIN LOGIC ---
         document.getElementById('adminLoginBtn').addEventListener('click', () => {
             const password = document.getElementById('adminPassword').value;
             const statusElement = document.getElementById('adminStatus');
@@ -275,38 +329,91 @@
             if (password === ADMIN_PASSWORD) {
                 isAdminLoggedIn = true;
                 statusElement.textContent = "Admin Logged In! Delete buttons enabled.";
-                statusElement.style.color = "#00ff00"; // Green for success
+                statusElement.style.color = "#00ff00"; 
                 document.getElementById('adminPassword').value = '';
                 document.getElementById('adminControls').style.display = 'none';
                 displayRatings(); // Reload to show delete buttons
             } else {
                 isAdminLoggedIn = false;
                 statusElement.textContent = "Incorrect Password.";
-                statusElement.style.color = "#ff0000"; // Red for failure
+                statusElement.style.color = "#ff0000";
                 document.getElementById('adminPassword').value = '';
             }
         });
+        
+        // --- TINX CLAIM LOGIC ---
+        document.getElementById('tinxClaimBtn').addEventListener('click', () => {
+            const password = document.getElementById('tinxPassword').value;
+            const statusElement = document.getElementById('tinxStatus');
+
+            if (password !== TINX_PASSWORD) {
+                statusElement.textContent = "Incorrect Tinx Password.";
+                statusElement.style.color = "#ff0000";
+                document.getElementById('tinxPassword').value = '';
+                return;
+            }
+
+            statusElement.textContent = "Checking for claimable bundles...";
+            statusElement.style.color = "#ffcc00";
+
+            ratingsRef.orderByChild('isToken').equalTo(true).once('value', snapshot => {
+                const unclaimedTokens = [];
+                snapshot.forEach(child => {
+                    const tokenData = child.val();
+                    if (!tokenData.claimed) {
+                        unclaimedTokens.push(child.key);
+                    }
+                });
+
+                if (unclaimedTokens.length >= TOKEN_BUNDLE_SIZE) {
+                    // Claim the bundle by setting 'claimed' to true for the first 5 tokens
+                    const updates = {};
+                    for (let i = 0; i < TOKEN_BUNDLE_SIZE; i++) {
+                        updates[unclaimedTokens[i] + '/claimed'] = true;
+                    }
+                    
+                    database.ref('ratings').update(updates).then(() => {
+                        statusElement.textContent = `SUCCESS! Claimed ${TOKEN_BUNDLE_SIZE} tokens.`;
+                        statusElement.style.color = "#00ff00";
+                        document.getElementById('tinxPassword').value = '';
+                        displayRatings(); // Update icons
+                    }).catch(error => {
+                        statusElement.textContent = "Error claiming bundle: " + error.message;
+                        statusElement.style.color = "#ff0000";
+                    });
+
+                } else {
+                    statusElement.textContent = `Failed. Only ${unclaimedTokens.length} of ${TOKEN_BUNDLE_SIZE} tokens available.`;
+                    statusElement.style.color = "#ff0000";
+                }
+            });
+        });
+
 
         // --- INTERACTION HANDLERS ---
 
         // Save Rating
         document.getElementById('saveBtn').addEventListener('click', () => {
             const name = document.getElementById('name').value.trim() || "Anonymous";
-            // CHANGED: Get value from new ID
             const characterRating = document.getElementById('characterRating').value;
             const stars = document.getElementById('stars').value;
             const ppEnergy = document.getElementById('ppEnergy').value;
             const review = document.getElementById('review').value;
 
+            const isFiveStar = parseFloat(stars) === 5.0;
+
             const newRating = {
                 name,
-                characterRating: characterRating, // CHANGED: Save under new key
+                characterRating: characterRating,
                 stars: parseFloat(stars),
                 ppEnergy: parseInt(ppEnergy),
                 review,
                 likes: 0,
                 dislikes: 0,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                // Token logic: a 5-star review becomes a bankable token (isToken: true, claimed: false)
+                isToken: isFiveStar,
+                claimed: isFiveStar ? false : undefined
             };
 
             ratingsRef.push(newRating, (error) => {
@@ -317,7 +424,7 @@
                     document.getElementById('stars').value = '3.0';
                     document.getElementById('ppEnergy').value = '5';
                     document.getElementById('review').value = '';
-                    document.getElementById('characterRating').value = 'Pim'; // CHANGED: Reset new ID
+                    document.getElementById('characterRating').value = 'Pim';
                     displayRatings();
                 }
             });
@@ -357,15 +464,75 @@
             });
         };
 
+        // --- DISPLAY LOGIC ---
+        function updateTokenDisplay(unclaimedCount, claimedCount) {
+            const sackIconsElement = document.getElementById('sackIcons');
+            sackIconsElement.innerHTML = '';
+            
+            // Calculate how many full bundles (claimed) and how many current sacks (unclaimed)
+            const totalBundles = claimedCount + Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE);
+            const currentSacks = unclaimedCount % TOKEN_BUNDLE_SIZE;
+            
+            // 1. Display Claimed/Empty Bundles
+            for (let i = 0; i < totalBundles; i++) {
+                // Using a similar icon for an empty sack/claimed bundle
+                const emptySack = document.createElement('span');
+                emptySack.className = 'sack-icon sack-empty';
+                emptySack.innerHTML = '<i class="fas fa-box-open"></i>'; // Changed to box open for bundle
+                sackIconsElement.appendChild(emptySack);
+            }
 
-        // --- DISPLAY RATINGS ---
+            // 2. Display Unclaimed Sacks (Current Bundle Progress)
+            if (unclaimedCount > 0) {
+                if (totalBundles > 0) {
+                    // Add a separator for the current, active bundle
+                    const separator = document.createElement('span');
+                    separator.textContent = ' | ';
+                    sackIconsElement.appendChild(separator);
+                }
+                
+                for (let i = 0; i < TOKEN_BUNDLE_SIZE; i++) {
+                    const sack = document.createElement('span');
+                    sack.className = 'sack-icon';
+                    if (i < currentSacks) {
+                        // Full Sack Icon (using the bag icon)
+                        sack.innerHTML = '<i class="fas fa-shopping-bag"></i>';
+                        sack.classList.add('sack-full');
+                    } else {
+                        // Empty Slot Icon (using a light outline to show the slot)
+                        sack.innerHTML = '<i class="far fa-circle"></i>'; 
+                        sack.classList.add('sack-empty');
+                    }
+                    sackIconsElement.appendChild(sack);
+                }
+            } else if (totalBundles === 0) {
+                sackIconsElement.textContent = 'None';
+            }
+        }
+
+
         function displayRatings() {
+            let unclaimedTokenCount = 0;
+            let claimedTokenCount = 0;
+
             ratingsRef.orderByChild('timestamp').limitToLast(50).once('value', snapshot => {
                 const ratingList = document.getElementById('ratingList');
                 const ratingsArray = [];
                 snapshot.forEach(child => {
-                    ratingsArray.push({ id: child.key, ...child.val() });
+                    const data = child.val();
+                    ratingsArray.push({ id: child.key, ...data });
+
+                    if (data.isToken) {
+                        if (data.claimed) {
+                            claimedTokenCount++;
+                        } else {
+                            unclaimedTokenCount++;
+                        }
+                    }
                 });
+
+                // Update the visual token display
+                updateTokenDisplay(unclaimedTokenCount, claimedTokenCount);
 
                 ratingList.innerHTML = '<h2><i class="fas fa-scroll"></i> The Vault of Reviews:</h2>';
 
@@ -375,15 +542,23 @@
 
                     const starSymbols = getStarSymbols(data.stars);
                     const ppEnergyText = `${data.ppEnergy}"`;
-                    // Delete button is only included in the HTML if isAdminLoggedIn is TRUE
                     const deleteButton = isAdminLoggedIn
                         ? `<button class="delete-btn" onclick="deleteRating('${data.id}')"><i class="fas fa-trash-alt"></i> Delete</button>`
+                        : '';
+
+                    // Display token status if it was a 5-star review
+                    const tokenStatus = data.isToken 
+                        ? (data.claimed 
+                            ? `<span style="color: #444; font-size: 0.9em; margin-left: 10px;">Token: Claimed <i class="fas fa-box-open"></i></span>`
+                            : `<span style="color: #fff; font-size: 0.9em; margin-left: 10px;">Token: Banked <i class="fas fa-shopping-bag"></i></span>`
+                          )
                         : '';
 
                     div.innerHTML = `
                         <div class="rating-header">
                             <span class="name">${data.name}</span>
                             <span class="timestamp">${new Date(data.timestamp).toLocaleString()}</span>
+                            ${tokenStatus}
                         </div>
                         <div class="rating-scores">
                             <div><span class="character-rating">Character: ${data.characterRating || 'N/A'}</span></div>
