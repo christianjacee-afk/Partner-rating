@@ -155,20 +155,23 @@ button{
   100% { transform: rotate(-0deg); }
 }
 
-/* --- BLOOD BUBBLE EFFECT --- */
+/* --- BLOOD BUBBLE EFFECT (Increased Visibility) --- */
 .bubble {
     position: fixed;
     border-radius: 50%;
-    background: radial-gradient(circle at 70% 30%, rgba(255, 0, 0, 0.8), rgba(139, 0, 0, 0.5));
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-    animation: bubble-pop 3s ease-out forwards;
-    pointer-events: none; /* Ignore clicks */
-    z-index: 1; /* Below content */
+    /* Darker, more vivid blood color */
+    background: radial-gradient(circle at 70% 30%, rgba(255, 60, 60, 1), rgba(139, 0, 0, 0.8));
+    border: 2px solid rgba(255, 0, 0, 0.8);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    animation: bubble-pop 4s ease-out forwards; /* Slightly longer animation */
+    pointer-events: none;
+    z-index: 1; 
 }
 
 @keyframes bubble-pop {
     0% { transform: scale(0.5); opacity: 1; }
-    90% { transform: scale(1.5); opacity: 0; }
+    50% { opacity: 0.8; }
+    90% { transform: scale(0); opacity: 0; } /* Pop/shrink suddenly */
     100% { transform: scale(0); opacity: 0; }
 }
 
@@ -181,12 +184,11 @@ button{
     text-align: center;
     color: #ff9900;
     display: flex;
-    justify-content: space-around; /* Use space-around for balanced display */
+    justify-content: space-around; 
     align-items: flex-end;
 }
 #individualTokenPile {
-    /* Base for the growing potato */
-    font-size: 1.5em; /* Controls the base size */
+    font-size: 1.5em; 
     min-width: 200px; 
     text-align: center;
 }
@@ -198,16 +200,17 @@ button{
     min-width: 150px;
 }
 .growing-potato {
-    color: #8B4513; /* Earthy brown for the potato/circle */
+    color: #8B4513; 
     filter: drop-shadow(0 0 5px rgba(255, 153, 0, 0.5));
-    transition: transform 0.5s ease-out, font-size 0.5s ease-out; /* Smooth growth transition */
+    transition: transform 0.5s ease-out, font-size 0.5s ease-out; 
     display: inline-block;
 }
-.potato-size-1 { font-size: 1em; }
-.potato-size-2 { font-size: 1.4em; }
-.potato-size-3 { font-size: 1.8em; }
-.potato-size-4 { font-size: 2.2em; }
-.potato-size-5 { font-size: 2.6em; } 
+/* Adjusted sizes for a more noticeable growth */
+.potato-size-1 { font-size: 1.5em; }
+.potato-size-2 { font-size: 2.0em; }
+.potato-size-3 { font-size: 2.5em; }
+.potato-size-4 { font-size: 3.0em; }
+.potato-size-5 { font-size: 3.5em; } 
 
 .token-bundle-icon {
     font-size: 2.5em;
@@ -322,18 +325,18 @@ function potatoExplosion(){
 function spawnBloodBubble() {
     const b = document.createElement("div");
     b.className = "bubble";
-    const size = Math.random() * 80 + 20; // Size between 20px and 100px
+    const size = Math.random() * 80 + 40; // Size between 40px and 120px (bigger)
     b.style.width = `${size}px`;
     b.style.height = `${size}px`;
-    b.style.left = `${Math.random() * 100}vw`; // Random horizontal position
-    b.style.top = `${Math.random() * 100}vh`; // Random vertical position
+    b.style.left = `${Math.random() * 100}vw`; 
+    b.style.top = `${Math.random() * 100}vh`; 
 
     document.body.appendChild(b);
-    setTimeout(() => b.remove(), 3000); // Remove after animation finishes
+    setTimeout(() => b.remove(), 4000); // Wait 4 seconds for a new bubble
 }
 
-// Start spawning bubbles every few seconds
-setInterval(spawnBloodBubble, 2000); 
+// Start spawning bubbles every 2.5 seconds
+setInterval(spawnBloodBubble, 2500); 
 
 
 // --- TOGGLE HANDLERS ---
@@ -551,7 +554,6 @@ function updateTokenDisplay(unclaimedCount, claimedCount) {
         bundleDisplayElement.innerHTML = bundlesHTML;
     }
 }
-
 
 // --- RENDER FUNCTION ---
 function render(){
