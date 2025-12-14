@@ -3,24 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <title>TiffanyTinx Ratings</title>
+  <!-- Google Font for heavy metal style -->
   <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #111;
+      background: linear-gradient(135deg, #111, #222);
       color: #eee;
+      font-family: Arial, sans-serif;
       padding: 20px;
     }
     h1 {
       font-family: 'Metal Mania', cursive;
-      font-size: 3em;
+      font-size: 5em;
       text-align: center;
       color: #ff0000;
-      margin-bottom: 30px;
+      text-shadow:
+        3px 3px #000,
+        6px 6px #550000,
+        9px 9px #aa0000;
+      margin-bottom: 40px;
     }
     label {
       display: block;
       margin: 10px 0 5px;
+      font-weight: bold;
     }
     input, select, textarea {
       width: 100%;
@@ -28,6 +34,7 @@
       margin-bottom: 15px;
       border-radius: 5px;
       border: none;
+      font-size: 1.1em;
     }
     button {
       padding: 10px 15px;
@@ -38,21 +45,29 @@
       font-weight: bold;
       cursor: pointer;
       margin-right: 10px;
+      font-size: 1.1em;
     }
     .rating-list {
-      margin-top: 30px;
-      border-top: 1px solid #444;
+      margin-top: 40px;
+      border-top: 2px solid #444;
       padding-top: 20px;
     }
     .rating-item {
       background-color: #222;
-      padding: 10px;
-      margin-bottom: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
       border-radius: 5px;
+      font-size: 1.1em;
     }
     .rating-item span {
       font-weight: bold;
       color: #ffcc00;
+    }
+    .stars {
+      color: gold;
+      font-size: 1.5em;
+      display: inline-block;
+      margin-right: 8px;
     }
   </style>
 </head>
@@ -61,22 +76,24 @@
   <h1>TiffanyTinx</h1>
 
   <div>
-    <label for="period">Period:</label>
-    <select id="period">
-      <option value="daily">Daily</option>
-      <option value="weekly">Weekly</option>
-      <option value="monthly">Monthly</option>
+    <label for="name">Your Name (leave blank for anonymous):</label>
+    <input type="text" id="name" placeholder="Enter your name">
+
+    <label for="ratingType">Rating Type:</label>
+    <select id="ratingType">
+      <option value="Pim">Pim</option>
+      <option value="Charlie">Charlie</option>
+      <option value="Glee">Glee</option>
+      <option value="Mr Boss">Mr Boss</option>
     </select>
 
-    <label for="rating">Rating (1-10):</label>
-    <input type="number" id="rating" min="1" max="10">
-
-    <label for="addon">Add-on (Sweet / Savage / Funny):</label>
-    <select id="addon">
-      <option value="None">None</option>
-      <option value="Sweet">Sweet</option>
-      <option value="Savage">Savage</option>
-      <option value="Funny">Funny</option>
+    <label for="stars">Stars (1–5):</label>
+    <select id="stars">
+      <option value="1">★</option>
+      <option value="2">★★</option>
+      <option value="3">★★★</option>
+      <option value="4">★★★★</option>
+      <option value="5">★★★★★</option>
     </select>
 
     <label for="review">Review:</label>
@@ -95,7 +112,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // Your Firebase config
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyC7srqV5cigcYZEdGIW5O8jl-LoA5nNECk",
       authDomain: "tiffanytinx-bbf9c.firebaseapp.com",
@@ -107,27 +124,21 @@
       measurementId: "G-Q6WTK15T2K"
     };
 
-    // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
     const ratingsRef = database.ref('ratings');
 
     // Save rating
     document.getElementById('saveBtn').addEventListener('click', () => {
-      const period = document.getElementById('period').value;
-      const rating = document.getElementById('rating').value;
-      const addon = document.getElementById('addon').value;
+      const name = document.getElementById('name').value.trim() || "Anonymous";
+      const type = document.getElementById('ratingType').value;
+      const stars = document.getElementById('stars').value;
       const review = document.getElementById('review').value;
 
-      if (!rating) {
-        alert("Please enter a rating!");
-        return;
-      }
-
       const newRating = {
-        period,
-        rating,
-        addon,
+        name,
+        type,
+        stars,
         review,
         timestamp: Date.now()
       };
@@ -137,9 +148,10 @@
           alert("Error saving rating: " + error);
         } else {
           displayRatings();
-          document.getElementById('rating').value = '';
-          document.getElementById('addon').value = 'None';
+          document.getElementById('name').value = '';
+          document.getElementById('stars').value = '1';
           document.getElementById('review').value = '';
+          document.getElementById('ratingType').value = 'Pim';
         }
       });
     });
@@ -154,7 +166,7 @@
           const div = document.createElement('div');
           div.className = 'rating-item';
           div.innerHTML = `
-            <span>${data.period}:</span> Rating: ${data.rating} ${data.addon !== 'None' ? ' | ' + data.addon : ''}<br>
+            <span>${data.name}</span> | ${data.type} <span class="stars">${'★'.repeat(data.stars)}</span><br>
             ${data.review ? 'Comment: ' + data.review : ''}
           `;
           ratingList.appendChild(div);
