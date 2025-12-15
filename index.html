@@ -14,13 +14,13 @@
     --border-glow: #ff5599; 
     --dark-bg: rgba(15, 0, 15, 0.95);
     --gold-coin: #FFD700;
-    --clean-bg: #1c001c; /* Slightly lighter inner background */
+    --clean-bg: #1c001c; 
 }
 
 body{
   background:radial-gradient(circle at top,#2b0000,#000);
   color:#eee;
-  font-family:'Jost', sans-serif; /* Clean font from the image */
+  font-family:'Jost', sans-serif;
   padding:20px;
   min-height: 150vh; 
   padding-bottom: 100px;
@@ -37,9 +37,9 @@ body{
   z-index: 10;
 }
 h1{
-  font-family:'Cinzel', serif; /* Use Cinzel for a bold title look */
+  font-family:'Cinzel', serif;
   text-align:center;
-  font-size:3.5em; /* Adjusted size to match image */
+  font-size:3.5em; 
   color:var(--primary-red);
   text-shadow:0 0 25px var(--border-glow);
   margin-bottom: 30px;
@@ -49,7 +49,7 @@ label{margin-top:10px;display:block;color:#ff99c2; font-weight: 600;}
 input,select,textarea{
   width:100%;
   padding:12px; 
-  background:#100010; /* Very dark input field */
+  background:#100010; 
   border:1px solid #333;
   color:#fff;
   border-radius:10px;
@@ -62,7 +62,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* --- SAVE BUTTON ANIMATION KEYFRAMES --- */
-@keyframes bounce { /* (Kept original bounce) */
+@keyframes bounce { 
     0%, 100%, 20%, 50%, 80% { transform: translateY(0); }
     40% { transform: translateY(-5px); }
     60% { transform: translateY(-2px); }
@@ -72,7 +72,7 @@ input:focus, select:focus, textarea:focus {
   padding:18px;
   width:100%;
   border:none;
-  border-radius:10px; /* Squared off look like image */
+  border-radius:10px; 
   background:linear-gradient(to top, #8f0030, var(--primary-red));
   font-size:1.2em;
   font-weight:bold;
@@ -81,9 +81,7 @@ input:focus, select:focus, textarea:focus {
   box-shadow:0 5px #5c0020,0 0 20px var(--border-glow);
   transition: all 0.1s;
 }
-#saveBtn:hover {
-    background: linear-gradient(to top, #ff0055, #ff5599);
-}
+#saveBtn:hover { background: linear-gradient(to top, #ff0055, #ff5599); }
 #saveBtn:active{
     transform:translateY(5px);
     box-shadow:0 0 #5c0020, 0 0 10px var(--primary-red);
@@ -118,7 +116,7 @@ input:focus, select:focus, textarea:focus {
 .rating{
   margin-top:25px; 
   padding:20px;
-  border-radius:10px; /* Less rounded corners */
+  border-radius:10px; 
   background:#222;
   border:1px solid #444;
   box-shadow:0 0 8px rgba(255,0,85,.4);
@@ -153,7 +151,7 @@ input:focus, select:focus, textarea:focus {
   border-radius:15px;
   border:2px solid var(--primary-red);
   display:none;
-  width:320px; /* Slightly wider panel like the image */
+  width:320px; 
   z-index: 99;
   box-shadow: 0 0 15px var(--border-glow);
 }
@@ -183,7 +181,6 @@ button{
 }
 
 /* --- ANIMATION STYLES --- */
-/* Potato Explosion uses emoji now */
 .potato-explosion {
   position: fixed; 
   inset: 0;
@@ -197,7 +194,7 @@ button{
   animation: explode 3s ease-out forwards;
 }
 .potato-explosion::before {
-  content: '🥔'; /* Reinstated Potato Emoji */
+  content: '🥔'; 
   animation: potato-jiggle 0.1s infinite;
   text-shadow: 0 0 50px rgba(255, 153, 0, 0.8), 0 0 100px rgba(255, 69, 0, 0.5);
 }
@@ -214,14 +211,13 @@ button{
   100% { transform: rotate(-0deg); }
 }
 
-
 /* --- TOKEN/PRIZE SYSTEM STYLES --- */
 #tokenDisplay {
     margin-top: 30px;
     padding-top: 20px; 
     border-top: 1px solid var(--primary-red); 
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping */
+    flex-wrap: wrap; 
     justify-content: space-around; 
     align-items: flex-start;
     gap: 20px;
@@ -253,10 +249,10 @@ button{
     margin-bottom: 0;
 }
 
-/* Stacked Meter Styles */
-@keyframes coinPulse { /* New Keyframe for individual coins */
+/* Stacked Meter Styles (Restored for pulsing effect) */
+@keyframes coinPulse { 
     0% { transform: scale(1); }
-    50% { transform: scale(1.1); box-shadow: 0 0 8px var(--gold-coin); }
+    50% { transform: scale(1.1); box-shadow: 0 0 8px #ff9900; } /* Potato glow color */
     100% { transform: scale(1); }
 }
 .slot-meter {
@@ -264,7 +260,7 @@ button{
     justify-content: center;
     gap: 8px; 
     margin-top: 10px;
-    min-height: 40px; /* Ensure visual space */
+    min-height: 40px; 
 }
 .coin-slot {
     font-size: 2.2em;
@@ -272,34 +268,44 @@ button{
     filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 }
 .coin-slot.filled {
-    color: var(--gold-coin);
-    filter: drop-shadow(0 0 8px var(--gold-coin));
+    color: #ff9900; /* Potato color for filled slot */
+    filter: drop-shadow(0 0 8px #ff9900);
 }
 .coin-slot.pulsing {
-    animation: coinPulse 0.6s ease-out; /* Apply pulse animation */
+    animation: coinPulse 0.6s ease-out; 
 }
 
-
-.token-bundle-icon {
-    font-size: 2.2em; 
-    margin: 0 5px;
-    display: inline-block;
+.token-icon-display {
+    font-size: 1.5em;
+    margin-left: 10px;
 }
-/* Meatball Cloud Style (Ready Exchange) */
-.meatball-cloud-icon {
-    color: #ffcc00; 
-    filter: drop-shadow(0 0 5px #ff0055); 
-}
-/* Banked Prize Style */
-.banked-prize-icon {
-    color: #00ff00; /* Green for banked/collected prizes */
+.banked-token-icon {
+    color: #00ff00; 
     filter: drop-shadow(0 0 5px #00ff00);
+}
+
+/* --- SPRITE ANIMATION --- */
+@keyframes walk {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(100vw); }
+}
+.sprite {
+    position: fixed;
+    bottom: 0;
+    left: -100px; /* Start further off screen */
+    font-size: 3em; 
+    animation: walk 20s linear infinite; 
+    z-index: 999;
+    line-height: 0; /* Prevents line height from affecting position */
+}
+.sprite::before {
+    content: '🚶🏽'; 
 }
 </style>
 </head>
 
 <body>
-
+<div class="sprite"></div>
 <div class="container">
 <h1>TiffanyTinx</h1>
 
@@ -354,18 +360,18 @@ button{
   <p id="adminStatus"></p>
   
   <div id="adminTools" style="display:none; margin-top: 15px; border-top: 1px solid var(--primary-red); padding-top: 10px;">
-    <p style="color: #ff99c2; font-weight: bold; margin-bottom: 5px;">Prize Point Control</p>
-    <button onclick="adminToggleTokenStatus('add')"><i class="fas fa-plus"></i> Add New Prize Point</button>
-    <button onclick="adminToggleTokenStatus('remove')"><i class="fas fa-minus"></i> Remove Oldest Prize Point</button>
+    <p style="color: #ff99c2; font-weight: bold; margin-bottom: 5px;">Potato Control</p>
+    <button onclick="adminToggleTokenStatus('add')"><i class="fas fa-plus"></i> Add New Potato</button>
+    <button onclick="adminToggleTokenStatus('remove')"><i class="fas fa-minus"></i> Remove Oldest Potato</button>
   </div>
 </div>
 
 <div id="tinxPanel" class="panel">
   <label>Tinx Password</label>
   <input type="password" id="tinxPass">
-  <button id="tinxClaimLogin">LOGIN / CHECK PRIZES</button> 
+  <button id="tinxClaimLogin">LOGIN / CHECK POTATOES</button> 
   
-  <button id="tinxClaimBtn" class="tinx-claim-style" style="display: none;">CLAIM AVAILABLE PRIZES</button>
+  <button id="tinxClaimBtn" class="tinx-claim-style" style="display: none;">CLAIM AVAILABLE POTATOES</button>
   <p id="tinxStatus"></p>
 </div>
 
@@ -385,8 +391,8 @@ const ref=db.ref("ratings");
 
 // --- CONFIGURATION CONSTANTS ---
 const MODERATOR_PASSWORD="ppeanile";
-const TINX_PASSWORD="punchers"; 
-const PRIZE_BUNDLE_SIZE = 5;
+const TINX_PASSWORD="tinxrules"; 
+const PRIZE_BUNDLE_SIZE = 5; // Used for meter display, but bankable size is 1
 
 let isAdmin=false;
 let isTinxLoggedIn=false; 
@@ -419,7 +425,7 @@ adminToggle.onclick=()=>adminPanel.style.display=adminPanel.style.display==="blo
 tinxToggle.onclick=()=>{
     tinxToggle.classList.remove('prize-ready-pulse');
     tinxPanel.style.display=tinxPanel.style.display==="block"?"none":"block";
-    document.getElementById('tinxClaimBtn').style.display = 'none'; // Hide claim button until login
+    document.getElementById('tinxClaimBtn').style.display = 'none';
     document.getElementById('tinxClaimLogin').style.display = 'block';
     document.getElementById('tokenDisplay').style.display = 'none'; 
     isTinxLoggedIn = false;
@@ -441,7 +447,80 @@ adminLogin.onclick=()=>{
 };
 
 
-// --- TINX LOGIN / CHECK PRIZES LOGIC ---
+// --- MODERATOR TOKEN CONTROL ---
+window.adminSetToken = (id, status) => {
+    if (!isAdmin) {
+        alert("You must be logged in as Moderator to modify potatoes.");
+        return;
+    }
+    const actionText = status ? 'ADD' : 'REMOVE';
+    if (!confirm(`Are you sure you want to ${actionText} potato status for this rating?`)) {
+        return;
+    }
+    
+    const updates = {};
+    updates.token = status;
+    updates.claimed = status ? false : null; 
+    updates.stars = status ? 5 : 4; 
+
+    ref.child(id).once('value', snapshot => {
+        const currentRating = snapshot.val();
+        if (!status && currentRating.stars !== 5) {
+             updates.stars = currentRating.stars; 
+        }
+
+        ref.child(id).update(updates).then(() => {
+            alert(`Potato status successfully ${actionText}ed!`);
+            render();
+        }).catch(error => {
+            alert("Error updating potato status: " + error.message);
+        });
+    });
+};
+
+window.adminToggleTokenStatus = (action) => {
+    if (!isAdmin) return;
+    
+    if (action === 'remove') {
+        ref.orderByChild('token').equalTo(true).once('value', snapshot => {
+            let targetKey = null;
+            snapshot.forEach(child => {
+                const r = child.val();
+                if (!r.claimed) {
+                    targetKey = child.key;
+                    return true;
+                }
+            });
+            
+            if (targetKey) {
+                ref.child(targetKey).update({token: false, claimed: null, stars: 4}).then(() => {
+                    alert("Oldest unclaimed potato removed and rating stars set to 4!");
+                    render();
+                });
+            } else {
+                alert("No unclaimed potatoes found to remove.");
+            }
+        });
+    
+    } else if (action === 'add') {
+        ref.push({
+            name: "MODERATOR ADDED POINT",
+            character: "Moderator",
+            stars: 5,
+            pp: 1,
+            review: "Manually added potato by moderator.",
+            token: true, 
+            claimed: false, 
+            time: Date.now()
+        }).then(() => {
+            alert("New unclaimed potato added!");
+            render();
+        });
+    }
+};
+
+
+// --- TINX LOGIN / CHECK POTATOES LOGIC ---
 document.getElementById('tinxClaimLogin').onclick = () => {
     const password = tinxPass.value;
     if (password !== TINX_PASSWORD) {
@@ -458,7 +537,6 @@ document.getElementById('tinxClaimLogin').onclick = () => {
     isTinxLoggedIn = true;
     tinxToggle.classList.remove('prize-ready-pulse'); 
     
-    // Check if bundles are ready to determine button visibility
     ref.orderByChild('token').equalTo(true).once('value', snapshot => {
         let unclaimedTokensCount = 0;
         snapshot.forEach(child => {
@@ -467,27 +545,24 @@ document.getElementById('tinxClaimLogin').onclick = () => {
             }
         });
 
-        const unclaimedBundlesReady = Math.floor(unclaimedTokensCount / PRIZE_BUNDLE_SIZE);
-
-        if (unclaimedBundlesReady >= 1) {
+        if (unclaimedTokensCount > 0) {
             document.getElementById('tinxClaimBtn').style.display = 'block';
-            document.getElementById('tinxClaimBtn').textContent = `CLAIM ${unclaimedBundlesReady} AVAILABLE PRIZE(S)`;
-            tinxStatus.textContent = `${unclaimedBundlesReady} prize bundle(s) ready to claim.`;
+            document.getElementById('tinxClaimBtn').textContent = `CLAIM ${unclaimedTokensCount} AVAILABLE POTATO(S)`;
+            tinxStatus.textContent = `${unclaimedTokensCount} prize potato(s) ready to claim.`;
         } else {
             document.getElementById('tinxClaimBtn').style.display = 'none';
-            tinxStatus.textContent = `No new prize bundles ready. ${unclaimedTokensCount} points collected.`;
+            tinxStatus.textContent = `No new prize potatoes ready.`;
         }
         tinxStatus.style.color = "#ff99c2";
     });
 };
 
 
-// --- TINX CLAIM LOGIC (Moves Unclaimed to Banked) ---
+// --- TINX CLAIM LOGIC (EVERY TOKEN IS BANKABLE) ---
 tinxClaimBtn.onclick = () => {
     tinxStatus.textContent = "Processing claim...";
     tinxStatus.style.color = "#ff99c2";
     
-    // 1. Get ALL unclaimed token keys
     ref.orderByChild('token').equalTo(true).once('value', snapshot => {
         const unclaimedTokenKeys = [];
         snapshot.forEach(child => {
@@ -496,37 +571,34 @@ tinxClaimBtn.onclick = () => {
             }
         });
 
-        const unclaimedBundlesReady = Math.floor(unclaimedTokenKeys.length / PRIZE_BUNDLE_SIZE);
+        const tokensToClaim = unclaimedTokenKeys.length;
 
-        if (unclaimedBundlesReady >= 1) {
+        if (tokensToClaim > 0) {
             
-            // CONFIRMATION DIALOG
-            if (!confirm(`Are you sure you want to bank ${unclaimedBundlesReady} Meatball Cloud(s)?`)) {
+            if (!confirm(`Are you sure you want to bank ${tokensToClaim} prize potato(es)?`)) {
                 tinxStatus.textContent = "Claiming cancelled.";
                 return;
             }
 
-            // 2. Update the claimed status of only the tokens required for the bundles
             const updates = {};
-            const tokensToClaim = unclaimedBundlesReady * PRIZE_BUNDLE_SIZE; 
             for (let i = 0; i < tokensToClaim; i++) {
                 updates[unclaimedTokenKeys[i] + '/claimed'] = true;
             }
             
             db.ref('ratings').update(updates).then(() => {
-                tinxStatus.textContent = `SUCCESS! ${unclaimedBundlesReady} bundle(s) moved to Banked Prizes.`;
+                tinxStatus.textContent = `SUCCESS! ${tokensToClaim} potato(es) moved to Banked Prizes.`;
                 tinxStatus.style.color = "#00ff00";
                 tinxPass.value = '';
                 potatoExplosion(); 
-                document.getElementById('tinxClaimBtn').style.display = 'none'; // Hide claim button after success
-                render(); // Re-render to update the banked count
+                document.getElementById('tinxClaimBtn').style.display = 'none';
+                render();
             }).catch(error => {
                 tinxStatus.textContent = "Error claiming prize: " + error.message;
                 tinxStatus.style.color = "#ff0000";
             });
 
         } else {
-            tinxStatus.textContent = `No prize bundles available to claim.`;
+            tinxStatus.textContent = `No prize potatoes available to claim.`;
             tinxStatus.style.color = "#ff0000";
             document.getElementById('tinxClaimBtn').style.display = 'none';
         }
@@ -559,60 +631,62 @@ function updateTokenDisplay(unclaimedCount, claimedCount) {
     individualPileElement.innerHTML = '';
     bundleDisplayElement.innerHTML = '';
     
+    // Use PRIZE_BUNDLE_SIZE for visual meter, even if banking happens individually (size 1)
     const currentCoins = unclaimedCount % PRIZE_BUNDLE_SIZE;
-    const unclaimedBundlesReady = Math.floor(unclaimedCount / PRIZE_BUNDLE_SIZE);
-    const claimedBundlesFinal = Math.floor(claimedCount / PRIZE_BUNDLE_SIZE);
+    const unclaimedReadyCount = unclaimedCount; 
+    const bankedCount = claimedCount;
 
     // 1. PRIZE READY ALERT (Tinx Toggle Pulse)
-    if (unclaimedBundlesReady > 0 && !isTinxLoggedIn) {
+    if (unclaimedReadyCount > 0 && !isTinxLoggedIn) {
          tinxToggle.classList.add('prize-ready-pulse');
     } else {
          tinxToggle.classList.remove('prize-ready-pulse');
     }
 
 
-    // 2. STACKED SLOT METER (with pulsing feature)
-    let meterHTML = `<div class="token-section"><h3>Prize Point Accumulation</h3>`;
+    // 2. INDIVIDUAL TOKEN ACCUMULATION DISPLAY (Restored Stacked Meter for Pulsing Effect)
+    let meterHTML = `<div class="token-section"><h3>Unbanked Potato Accumulation</h3>`;
     meterHTML += `<div class="slot-meter">`;
     for (let i = 0; i < PRIZE_BUNDLE_SIZE; i++) {
-        const isFilled = i < currentCoins ? 'filled' : '';
-        // Apply pulsing class to the newest coin (the one at index currentCoins - 1)
-        const isPulsing = (i === currentCoins - 1) ? 'pulsing' : ''; 
-        meterHTML += `<span class="coin-slot ${isFilled} ${isPulsing}"><i class="fas fa-coins"></i></span>`;
+        // Use the currentCoins count for the visual meter logic
+        const isFilled = (unclaimedCount > i); 
+        const isPulsing = (unclaimedCount > 0 && i === PRIZE_BUNDLE_SIZE - 1) ? 'pulsing' : ''; 
+        
+        let iconHtml = '🥔';
+        let colorClass = isFilled ? 'filled' : '';
+        
+        meterHTML += `<span class="coin-slot ${colorClass} ${isPulsing}">${iconHtml}</span>`;
     }
-    meterHTML += `</div></div>`;
+    meterHTML += `</div>`;
+    meterHTML += `<p>Total Unbanked: ${unclaimedReadyCount}</p>`;
+    meterHTML += `</div>`;
     individualPileElement.innerHTML = meterHTML;
 
 
-    // 3. BUNDLE DISPLAY (Split into Ready and Banked)
-    let bundlesHTML = '<div class="token-section"><h3>Ready Exchanges (Unclaimed)</h3>';
+    // 3. BANKED PRIZES DISPLAY
+    let bundlesHTML = '<div class="token-section"><h3>Banked Potatoes</h3>';
     
-    // Render UNCLAIMED bundles (Meatball Clouds)
-    if (unclaimedBundlesReady === 0) {
-        bundlesHTML += `<p style="opacity: 0.7;">No Meatball Clouds available.</p>`;
+    if (bankedCount === 0) {
+        bundlesHTML += `<p style="opacity: 0.7;">The potato bank is empty!</p>`;
     } else {
-        for (let i = 0; i < unclaimedBundlesReady; i++) {
-            bundlesHTML += `<span class="token-bundle-icon meatball-cloud-icon" title="Ready to Claim!"><i class="fas fa-cloud-meatball"></i></span>`;
+        bundlesHTML += `<p style="font-size: 2.5em; margin: 10px 0; color: #00ff00;">${bankedCount} 🥔</p>`;
+        
+        let potatoDisplay = '';
+        const displayLimit = Math.min(bankedCount, 25); 
+        for (let i = 0; i < displayLimit; i++) {
+            potatoDisplay += `<span class="token-icon-display banked-token-icon">🥔</span>`;
         }
-    }
-    bundlesHTML += '</div>';
-
-    // RENDER CLAIMED bundles (Banked Prizes)
-    bundlesHTML += '<div class="token-section"><h3>Banked Prizes (Claimed)</h3>';
-    if (claimedBundlesFinal === 0) {
-        bundlesHTML += `<p style="opacity: 0.7;">The bank is empty!</p>`;
-    } else {
-        for (let i = 0; i < claimedBundlesFinal; i++) {
-            // Use the trophy icon for the Banked Prize
-            bundlesHTML += `<span class="token-bundle-icon banked-prize-icon" title="Banked Prize"><i class="fas fa-trophy"></i></span>`;
+        if (bankedCount > displayLimit) {
+            potatoDisplay += `<span style="font-size: 1.2em; opacity: 0.8;"> + ${bankedCount - displayLimit} more</span>`;
         }
+        bundlesHTML += `<div style="max-height: 120px; overflow-y: auto; padding: 5px;">${potatoDisplay}</div>`;
     }
     bundlesHTML += '</div>';
     
     bundleDisplayElement.innerHTML = bundlesHTML;
 }
 
-// --- RENDER FUNCTION (Unchanged except for updateTokenDisplay call) ---
+// --- RENDER FUNCTION (Simplified Token Display) ---
 window.del=id=>isAdmin&&confirm("Delete?")&&ref.child(id).remove();
 window.editRating=(id,r)=>{
   if(!isAdmin) return;
@@ -645,16 +719,20 @@ function render(){
         const d=document.createElement("div");
         d.className="rating";
         
-        const tokenStatus = r.token 
-            ? `<span style="color:${r.claimed?'#555':'#ff9900'}; font-weight:bold; margin-left: 10px;">💰 Prize Point: ${r.claimed?"BANKED":"AVAILABLE"}</span>`
-            : '';
-
+        // --- SIMPLIFIED TOKEN DISPLAY (Just the Icon) ---
+        let tokenIcon = '';
+        if (r.token) {
+            const opacityStyle = r.claimed ? 'style="opacity: 0.4;"' : '';
+            tokenIcon = `<span class="token-icon-display" ${opacityStyle}>🥔</span>`;
+        }
+        
+        // Moderator buttons refer to potatoes
         const tokenToggleBtn = r.token 
-            ? `<button onclick="adminSetToken('${c.key}', false)"><i class="fas fa-minus"></i> Remove Point</button>` 
-            : `<button onclick="adminSetToken('${c.key}', true)"><i class="fas fa-plus"></i> Add Point</button>`;
+            ? `<button onclick="adminSetToken('${c.key}', false)"><i class="fas fa-minus"></i> Remove Potato</button>` 
+            : `<button onclick="adminSetToken('${c.key}', true)"><i class="fas fa-plus"></i> Add Potato</button>`;
         
         d.innerHTML=`
-            <b>${r.name}</b> (${r.character}) ${tokenStatus}<br>
+            <b>${r.name}</b> (${r.character}) ${tokenIcon}<br>
             <span class="stars">${"★".repeat(r.stars)}</span><br>
             PP: ${r.pp}<br>
             ${r.review||""}<br>
