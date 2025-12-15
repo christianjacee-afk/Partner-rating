@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TiffanyTinx Ratings - The Vault</title>
+<title>TiffanyTinx</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght=400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Metal+Mania&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
@@ -13,6 +13,7 @@
     --primary-red: #ff0055; 
     --border-glow: #ff5599; 
     --dark-bg: rgba(15, 0, 15, 0.95);
+    --gold-coin: #FFD700;
 }
 
 body{
@@ -20,9 +21,9 @@ body{
   color:#eee;
   font-family:'Cinzel',serif;
   padding:20px;
-  min-height: 100vh;
+  min-height: 150vh; /* Increased height to ensure scrollbar appears */
   padding-bottom: 100px;
-  overflow: hidden; 
+  /* !!! REMOVED overflow: hidden; !!! */ 
 }
 .container{
   max-width:820px;
@@ -101,6 +102,21 @@ input:focus, select:focus, textarea:focus {
     animation: bounce 0.5s;
 }
 
+/* --- Tinx Prize Ready Alert Animation --- */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 255, 0, 0.7); transform: scale(1); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 255, 0, 0); transform: scale(1.05); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 255, 0, 0); transform: scale(1); }
+}
+.prize-ready-pulse {
+    animation: pulse 1.5s infinite;
+    background: #FFD700 !important; 
+}
+#tinxToggle {
+    right: 90px;
+    background: #ff66cc;
+}
+
 .rating{
   margin-top:25px; 
   padding:20px;
@@ -129,8 +145,7 @@ input:focus, select:focus, textarea:focus {
 .secret-toggle:hover {
     transform: scale(1.1) rotate(5deg);
 }
-#adminToggle{right:20px}
-#tinxToggle{right:90px;background:#ff66cc}
+#adminToggle{right:20px} 
 
 .panel{
   position:fixed;
@@ -170,9 +185,9 @@ button{
     color: #000;
 }
 
-/* --- BLOOD BUBBLE EFFECT --- */
+/* --- ANIMATION STYLES --- */
 .bubble {
-    position: fixed;
+    position: fixed; /* Keep fixed so they float over scrolling content */
     border-radius: 50%;
     background: radial-gradient(circle at 70% 30%, rgba(255, 60, 60, 1), rgba(139, 0, 0, 0.8));
     border: 2px solid rgba(255, 0, 0, 0.8);
@@ -181,17 +196,14 @@ button{
     pointer-events: none;
     z-index: 1; 
 }
-
 @keyframes bubble-pop {
     0% { transform: scale(0.5); opacity: 1; }
     50% { opacity: 0.8; }
     90% { transform: scale(0); opacity: 0; }
     100% { transform: scale(0); opacity: 0; }
 }
-
-/* 🥔 FULLSCREEN POTATO EXPLOSION (Restored) */
 .potato-explosion {
-  position: fixed;
+  position: fixed; 
   inset: 0;
   z-index: 9999;
   background-color: rgba(0, 0, 0, 0.9);
@@ -203,11 +215,10 @@ button{
   animation: explode 3s ease-out forwards;
 }
 .potato-explosion::before {
-  content: '🥔';
+  content: '💰'; 
   animation: potato-jiggle 0.1s infinite;
   text-shadow: 0 0 50px rgba(255, 153, 0, 0.8), 0 0 100px rgba(255, 69, 0, 0.5);
 }
-
 @keyframes explode {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(3); opacity: 0.8; }
@@ -221,7 +232,8 @@ button{
   100% { transform: rotate(-0deg); }
 }
 
-/* --- TOKEN SYSTEM STYLES (Growing Potato Pile & Meatball Cloud) --- */
+
+/* --- TOKEN/PRIZE SYSTEM STYLES --- */
 #tokenDisplay {
     margin-top: 50px;
     padding: 25px 0; 
@@ -230,7 +242,7 @@ button{
     color: #ff9900;
     display: flex;
     justify-content: space-around; 
-    align-items: flex-end;
+    align-items: flex-start;
 }
 #individualTokenPile {
     font-size: 1.5em; 
@@ -238,26 +250,32 @@ button{
     text-align: center;
     padding-bottom: 5px;
 }
+/* Stacked Meter Styles */
+.slot-meter {
+    display: flex;
+    justify-content: center;
+    gap: 8px; 
+    margin-top: 10px;
+}
+.coin-slot {
+    font-size: 2.2em;
+    color: #333; 
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+.coin-slot.filled {
+    color: var(--gold-coin);
+    filter: drop-shadow(0 0 8px var(--gold-coin));
+    transition: color 0.3s ease-in;
+}
+
 #bundleDisplay {
     font-size: 1.5em;
     text-align: right;
     border-left: 2px solid #444;
     padding-left: 20px; 
     min-width: 150px;
+    height: 100px;
 }
-.growing-potato {
-    color: #8B4513; 
-    filter: drop-shadow(0 0 8px rgba(255, 153, 0, 0.7)); 
-    transition: transform 0.5s ease-out, font-size 0.5s ease-out; 
-    display: inline-block;
-}
-/* Potato Sizes */
-.potato-size-1 { font-size: 1.5em; }
-.potato-size-2 { font-size: 2.0em; }
-.potato-size-3 { font-size: 2.5em; }
-.potato-size-4 { font-size: 3.0em; }
-.potato-size-5 { font-size: 3.5em; } 
-
 .token-bundle-icon {
     font-size: 2.8em; 
     margin-left: 10px;
@@ -267,9 +285,9 @@ button{
     color: #ffcc00; 
     filter: drop-shadow(0 0 8px #ff0055); 
 }
-/* Claimed Bundle Style */
+/* Claimed Medal Style */
 .token-bundle-claimed {
-    color: #444;
+    color: #888; 
 }
 </style>
 </head>
@@ -277,10 +295,10 @@ button{
 <body>
 
 <div class="container">
-<h1>TiffanyTinx - The Vault</h1>
+<h1>TiffanyTinx</h1>
 
 <label>Name</label>
-<input id="name" placeholder="Anonymous">
+<input id="name" placeholder="Anonymous Submitter">
 
 <label>Character</label>
 <select id="character">
@@ -309,37 +327,37 @@ button{
 <label>Comment</label>
 <textarea id="review"></textarea>
 
-<button id="saveBtn"><i class="fas fa-hand-lizard"></i> SAVE RATING</button>
+<button id="saveBtn"><i class="fas fa-hand-lizard"></i> SUBMIT RATING</button>
 
 <div id="list"></div>
 
-<div id="tokenDisplay">
+<div id="tokenDisplay" style="display: none;">
     <div id="individualTokenPile"></div>
     <div id="bundleDisplay"></div>
 </div>
 
 </div>
 
-<div id="adminToggle" class="secret-toggle"><i class="fas fa-anchor"></i></div>
-<div id="tinxToggle" class="secret-toggle"><i class="fas fa-gift"></i></div>
+<div id="adminToggle" class="secret-toggle"><i class="fas fa-wrench"></i></div> 
+<div id="tinxToggle" class="secret-toggle"><i class="fas fa-trophy"></i></div> 
 
 <div id="adminPanel" class="panel">
-  <label>Admin Password</label>
+  <label>Moderator Password</label>
   <input type="password" id="adminPass">
   <button id="adminLogin">Login</button>
   <p id="adminStatus"></p>
   
   <div id="adminTools" style="display:none; margin-top: 15px; border-top: 1px solid var(--primary-red); padding-top: 10px;">
-    <p style="color: #ff99c2; font-weight: bold; margin-bottom: 5px;">Bulk Token Control</p>
-    <button onclick="adminToggleTokenStatus('add')"><i class="fas fa-plus"></i> Add New Token Rating</button>
-    <button onclick="adminToggleTokenStatus('remove')"><i class="fas fa-minus"></i> Remove Oldest Token</button>
+    <p style="color: #ff99c2; font-weight: bold; margin-bottom: 5px;">Prize Point Control</p>
+    <button onclick="adminToggleTokenStatus('add')"><i class="fas fa-plus"></i> Add New Prize Point</button>
+    <button onclick="adminToggleTokenStatus('remove')"><i class="fas fa-minus"></i> Remove Oldest Prize Point</button>
   </div>
 </div>
 
 <div id="tinxPanel" class="panel">
   <label>Tinx Password</label>
   <input type="password" id="tinxPass">
-  <button id="tinxClaimBtn">Claim Bundle</button> 
+  <button id="tinxClaimBtn">Exchange Prize Bundle</button> 
   <p id="tinxStatus"></p>
 </div>
 
@@ -358,15 +376,15 @@ const db=firebase.database();
 const ref=db.ref("ratings");
 
 // --- CONFIGURATION CONSTANTS ---
-const ADMIN_PASSWORD="ppeanile";
+const MODERATOR_PASSWORD="ppeanile";
 const TINX_PASSWORD="tinxrules"; 
-const TOKEN_BUNDLE_SIZE = 5;
+const PRIZE_BUNDLE_SIZE = 5;
 
-let isAdmin=false,isTinx=false;
+let isAdmin=false;
+let isTinxLoggedIn=false; 
 
 // --- UTILITY FUNCTIONS ---
-
-function potatoExplosion(){
+function potatoExplosion(){ 
   const f=document.createElement("div");
   f.className="potato-explosion";
   document.body.appendChild(f);
@@ -385,19 +403,22 @@ function spawnBloodBubble() {
     document.body.appendChild(b);
     setTimeout(() => b.remove(), 4000); 
 }
-
 setInterval(spawnBloodBubble, 2500); 
 
 
 // --- TOGGLE HANDLERS ---
 adminToggle.onclick=()=>adminPanel.style.display=adminPanel.style.display==="block"?"none":"block";
-tinxToggle.onclick=()=>tinxPanel.style.display=tinxPanel.style.display==="block"?"none":"block";
+tinxToggle.onclick=()=>{
+    // When Tinx clicks the toggle, we turn off the prize alert
+    tinxToggle.classList.remove('prize-ready-pulse');
+    tinxPanel.style.display=tinxPanel.style.display==="block"?"none":"block";
+};
 
-// --- LOGIN LOGIC ---
+// --- LOGIN LOGIC (Moderator) ---
 adminLogin.onclick=()=>{
-  if(adminPass.value===ADMIN_PASSWORD){
+  if(adminPass.value===MODERATOR_PASSWORD){
     isAdmin=true;
-    adminStatus.textContent="Admin enabled";
+    adminStatus.textContent="Moderator Enabled";
     adminStatus.style.color = "#00ff00";
     adminTools.style.display = "block";
     render();
@@ -408,14 +429,15 @@ adminLogin.onclick=()=>{
   }
 };
 
-// --- ADMIN PER-RATING TOKEN CONTROL ---
+
+// --- MODERATOR TOKEN CONTROL functions are preserved here for brevity but unchanged ---
 window.adminSetToken = (id, status) => {
     if (!isAdmin) {
-        alert("You must be logged in as Admin to modify token status.");
+        alert("You must be logged in as Moderator to modify prize points.");
         return;
     }
     const actionText = status ? 'ADD' : 'REMOVE';
-    if (!confirm(`Are you sure you want to ${actionText} token status for this rating?`)) {
+    if (!confirm(`Are you sure you want to ${actionText} prize point status for this rating?`)) {
         return;
     }
     
@@ -431,15 +453,14 @@ window.adminSetToken = (id, status) => {
         }
 
         ref.child(id).update(updates).then(() => {
-            alert(`Token status successfully ${actionText}ed!`);
+            alert(`Prize point status successfully ${actionText}ed!`);
             render();
         }).catch(error => {
-            alert("Error updating token status: " + error.message);
+            alert("Error updating prize point status: " + error.message);
         });
     });
 };
 
-// --- ADMIN BULK TOKEN CONTROL ---
 window.adminToggleTokenStatus = (action) => {
     if (!isAdmin) return;
     
@@ -456,26 +477,26 @@ window.adminToggleTokenStatus = (action) => {
             
             if (targetKey) {
                 ref.child(targetKey).update({token: false, claimed: null, stars: 4}).then(() => {
-                    alert("Oldest unclaimed token removed and rating stars set to 4!");
+                    alert("Oldest unclaimed prize point removed and rating stars set to 4!");
                     render();
                 });
             } else {
-                alert("No unclaimed tokens found to remove.");
+                alert("No unclaimed prize points found to remove.");
             }
         });
     
     } else if (action === 'add') {
         ref.push({
-            name: "ADMIN ADDED TOKEN",
-            character: "Admin",
+            name: "MODERATOR ADDED POINT",
+            character: "Moderator",
             stars: 5,
             pp: 1,
-            review: "Manually added token by administrator.",
+            review: "Manually added prize point by moderator.",
             token: true, 
             claimed: false, 
             time: Date.now()
         }).then(() => {
-            alert("New unclaimed token added!");
+            alert("New unclaimed prize point added!");
             render();
         });
     }
@@ -488,10 +509,17 @@ tinxClaimBtn.onclick = () => {
     if (password !== TINX_PASSWORD) {
         tinxStatus.textContent = "Incorrect Tinx Password.";
         tinxStatus.style.color = "#ff0000";
+        document.getElementById('tokenDisplay').style.display = 'none'; 
+        isTinxLoggedIn = false;
         return;
     }
-    
-    tinxStatus.textContent = "Checking for claimable bundles...";
+
+    // SUCCESSFUL LOGIN
+    document.getElementById('tokenDisplay').style.display = 'flex'; 
+    isTinxLoggedIn = true;
+    tinxToggle.classList.remove('prize-ready-pulse'); 
+
+    tinxStatus.textContent = "Checking for exchangeable bundles...";
     tinxStatus.style.color = "#ff99c2";
 
     ref.orderByChild('token').equalTo(true).once('value', snapshot => {
@@ -503,25 +531,35 @@ tinxClaimBtn.onclick = () => {
             }
         });
 
-        if (unclaimedTokens.length >= TOKEN_BUNDLE_SIZE) {
+        const unclaimedBundlesReady = Math.floor(unclaimedTokens.length / PRIZE_BUNDLE_SIZE);
+
+        if (unclaimedBundlesReady >= 1) {
+            
+            // CONFIRMATION DIALOG
+            if (!confirm(`Are you sure you want to exchange ${unclaimedBundlesReady} Meatball Cloud(s) for prize(s)?`)) {
+                tinxStatus.textContent = "Exchange cancelled.";
+                return;
+            }
+
             const updates = {};
-            for (let i = 0; i < TOKEN_BUNDLE_SIZE; i++) {
+            const tokensToClaim = unclaimedBundlesReady * PRIZE_BUNDLE_SIZE; 
+            for (let i = 0; i < tokensToClaim; i++) {
                 updates[unclaimedTokens[i] + '/claimed'] = true;
             }
             
             db.ref('ratings').update(updates).then(() => {
-                tinxStatus.textContent = `SUCCESS! Claimed ${TOKEN_BUNDLE_SIZE} tokens.`;
+                tinxStatus.textContent = `SUCCESS! Exchanged ${unclaimedBundlesReady} Prize Bundle(s).`;
                 tinxStatus.style.color = "#00ff00";
                 tinxPass.value = '';
                 potatoExplosion(); 
                 render();
             }).catch(error => {
-                tinxStatus.textContent = "Error claiming bundle: " + error.message;
+                tinxStatus.textContent = "Error exchanging prize: " + error.message;
                 tinxStatus.style.color = "#ff0000";
             });
 
         } else {
-            tinxStatus.textContent = `Failed. Only ${unclaimedTokens.length} of ${TOKEN_BUNDLE_SIZE} tokens available.`;
+            tinxStatus.textContent = `Failed. ${unclaimedTokens.length} Prize Points available. Need ${PRIZE_BUNDLE_SIZE} for an exchange.`;
             tinxStatus.style.color = "#ff0000";
         }
     });
@@ -540,14 +578,62 @@ saveBtn.onclick=()=>{
     claimed: s===5 ? false : null,
     time:Date.now()
   });
-  // THIS IS WHERE THE EXPLOSION IS TRIGGERED
   if(s===5) potatoExplosion(); 
   name.value="";review.value="";
 };
 
-// --- UTILITY/ADMIN FUNCTIONS ---
-window.del=id=>isAdmin&&confirm("Delete?")&&ref.child(id).remove();
 
+// --- TOKEN VISUALS (Stacked Slot Meter & Alerts) ---
+function updateTokenDisplay(unclaimedCount, claimedCount) {
+    const individualPileElement = document.getElementById('individualTokenPile');
+    const bundleDisplayElement = document.getElementById('bundleDisplay');
+    
+    individualPileElement.innerHTML = '';
+    bundleDisplayElement.innerHTML = '';
+    
+    const currentCoins = unclaimedCount % PRIZE_BUNDLE_SIZE;
+    const unclaimedBundlesReady = Math.floor(unclaimedCount / PRIZE_BUNDLE_SIZE);
+    const claimedBundlesFinal = Math.floor(claimedCount / PRIZE_BUNDLE_SIZE);
+
+    // 1. PRIZE READY ALERT 
+    if (unclaimedBundlesReady > 0 && !isTinxLoggedIn) {
+         tinxToggle.classList.add('prize-ready-pulse');
+    } else {
+         tinxToggle.classList.remove('prize-ready-pulse');
+    }
+
+
+    // 2. STACKED SLOT METER
+    let meterHTML = `<p>Prize Point Accumulation</p>`;
+    meterHTML += `<div class="slot-meter">`;
+    for (let i = 0; i < PRIZE_BUNDLE_SIZE; i++) {
+        const isFilled = i < currentCoins ? 'filled' : '';
+        meterHTML += `<span class="coin-slot ${isFilled}"><i class="fas fa-coins"></i></span>`;
+    }
+    meterHTML += `</div>`;
+    individualPileElement.innerHTML = meterHTML;
+
+
+    // 3. BUNDLE DISPLAY
+    let bundlesHTML = '<div style="margin-bottom: 5px;">Ready Exchanges:</div>';
+    
+    // Render UNCLAIMED bundles (Meatball Clouds)
+    for (let i = 0; i < unclaimedBundlesReady; i++) {
+        bundlesHTML += `<span class="token-bundle-icon meatball-cloud-icon" title="Ready to Exchange!"><i class="fas fa-cloud-meatball"></i></span>`;
+    }
+    
+    bundlesHTML += '<div style="margin-top: 15px; margin-bottom: 5px; border-top: 1px dashed #444; padding-top: 10px;">Exchanged Prizes:</div>';
+
+    // Render CLAIMED bundles (Medals)
+    for (let i = 0; i < claimedBundlesFinal; i++) {
+        bundlesHTML += `<span class="token-bundle-icon token-bundle-claimed" title="Prize Exchanged"><i class="fas fa-medal"></i></span>`;
+    }
+    
+    bundleDisplayElement.innerHTML = bundlesHTML;
+}
+
+// --- RENDER FUNCTION ---
+window.del=id=>isAdmin&&confirm("Delete?")&&ref.child(id).remove();
 window.editRating=(id,r)=>{
   if(!isAdmin) return;
   const n=prompt("Name:",r.name)||r.name;
@@ -558,56 +644,6 @@ window.editRating=(id,r)=>{
   ref.child(id).update({name:n,character:c,stars:s,pp:p,review:rev});
 };
 
-// --- TOKEN VISUALS (Growing Potato Pile & Meatball Cloud) ---
-
-function updateTokenDisplay(unclaimedCount, claimedCount) {
-    const individualPileElement = document.getElementById('individualTokenPile');
-    const bundleDisplayElement = document.getElementById('bundleDisplay');
-    
-    individualPileElement.innerHTML = '';
-    bundleDisplayElement.innerHTML = '';
-    
-    // 1. Calculate and display the current individual potato count (fries)
-    const currentPotatoes = unclaimedCount % TOKEN_BUNDLE_SIZE;
-    
-    if (unclaimedCount === 0 && claimedCount === 0) {
-        individualPileElement.innerHTML = `
-            <div style="font-size: 1.2em;">No tokens banked.</div>
-            <div style="font-size: 0.8em; color: #777;">(0/${TOKEN_BUNDLE_SIZE})</div>
-        `;
-    } else {
-        // Apply a dynamic size class based on the potato count (1-5)
-        const sizeClass = `potato-size-${currentPotatoes}`;
-        
-        // Using fa-circle as the stylized potato icon
-        individualPileElement.innerHTML = `
-            <i class="fas fa-circle growing-potato ${sizeClass}" title="Potato Token Pile"></i>
-            <div style="font-size: 0.8em; color: #ff9900; margin-top: 10px;">(${currentPotatoes}/${TOKEN_BUNDLE_SIZE})</div>
-        `;
-    }
-
-    // 2. Display the bundles (Meatball Clouds / Used Boxes)
-    const unclaimedBundles = Math.floor(unclaimedCount / TOKEN_BUNDLE_SIZE);
-    
-    let bundlesHTML = '<div style="margin-bottom: 5px;">Bundles:</div>';
-    
-    // Render unclaimed bundles (Meatball Clouds)
-    for (let i = 0; i < unclaimedBundles; i++) {
-        bundlesHTML += `<span class="token-bundle-icon meatball-cloud-icon" title="Meatball Storm Cloud Bundle!"><i class="fas fa-cloud-meatball"></i></span>`;
-    }
-    // Render claimed bundles (Used Boxes)
-    for (let i = 0; i < claimedCount; i++) {
-        bundlesHTML += `<span class="token-bundle-icon token-bundle-claimed" title="Claimed Ticket Box"><i class="fas fa-box-open"></i></span>`;
-    }
-    
-    if (unclaimedBundles + claimedCount === 0 && currentPotatoes > 0) {
-         bundleDisplayElement.innerHTML = 'Bundles: 0';
-    } else {
-        bundleDisplayElement.innerHTML = bundlesHTML;
-    }
-}
-
-// --- RENDER FUNCTION ---
 function render(){
   let unclaimedTokenCount = 0;
   let claimedTokenCount = 0;
@@ -626,19 +662,16 @@ function render(){
             }
         }
         
-        // RENDER RATING LIST ITEM
         const d=document.createElement("div");
         d.className="rating";
         
-        // Retaining the Potato Emoji for per-rating token status
         const tokenStatus = r.token 
-            ? `<span style="color:${r.claimed?'#555':'#ff9900'}; font-weight:bold; margin-left: 10px;">🥔 Token: ${r.claimed?"CLAIMED":"UNCLAIMED"}</span>`
+            ? `<span style="color:${r.claimed?'#555':'#ff9900'}; font-weight:bold; margin-left: 10px;">💰 Prize Point: ${r.claimed?"EXCHANGED":"AVAILABLE"}</span>`
             : '';
 
-        // Toggles for admin
         const tokenToggleBtn = r.token 
-            ? `<button onclick="adminSetToken('${c.key}', false)"><i class="fas fa-minus"></i> Remove Token</button>` 
-            : `<button onclick="adminSetToken('${c.key}', true)"><i class="fas fa-plus"></i> Add Token</button>`;
+            ? `<button onclick="adminSetToken('${c.key}', false)"><i class="fas fa-minus"></i> Remove Point</button>` 
+            : `<button onclick="adminSetToken('${c.key}', true)"><i class="fas fa-plus"></i> Add Point</button>`;
         
         d.innerHTML=`
             <b>${r.name}</b> (${r.character}) ${tokenStatus}<br>
@@ -648,8 +681,8 @@ function render(){
             ${isAdmin?`
             <br>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
-                ${tokenToggleBtn}
                 <button onclick="editRating('${c.key}',${JSON.stringify(r).replace(/"/g,'&quot;')})">Edit Rating</button>
+                ${tokenToggleBtn}
             </div>
             <button onclick="del('${c.key}')" style="margin-top: 5px;">Delete Rating</button>`:""}
         `;
