@@ -180,7 +180,7 @@ button{
     color: #000;
 }
 
-/* --- ANIMATION STYLES --- */
+/* --- EXPLOSION ANIMATION --- */
 .potato-explosion {
   position: fixed; 
   inset: 0;
@@ -252,7 +252,7 @@ button{
 /* Stacked Meter Styles (Restored for pulsing effect) */
 @keyframes coinPulse { 
     0% { transform: scale(1); }
-    50% { transform: scale(1.1); box-shadow: 0 0 8px #ff9900; } /* Potato glow color */
+    50% { transform: scale(1.1); box-shadow: 0 0 8px #ff9900; } 
     100% { transform: scale(1); }
 }
 .slot-meter {
@@ -268,7 +268,7 @@ button{
     filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 }
 .coin-slot.filled {
-    color: #ff9900; /* Potato color for filled slot */
+    color: #ff9900; 
     filter: drop-shadow(0 0 8px #ff9900);
 }
 .coin-slot.pulsing {
@@ -284,7 +284,7 @@ button{
     filter: drop-shadow(0 0 5px #00ff00);
 }
 
-/* --- SPRITE ANIMATION --- */
+/* --- FLAMING POTATO SPRITE ANIMATION --- */
 @keyframes walk {
     0% { transform: translateX(0); }
     100% { transform: translateX(100vw); }
@@ -292,14 +292,15 @@ button{
 .sprite {
     position: fixed;
     bottom: 0;
-    left: -100px; /* Start further off screen */
+    left: -100px; 
     font-size: 3em; 
-    animation: walk 20s linear infinite; 
+    animation: walk 18s linear infinite; /* Slightly faster run */
     z-index: 999;
-    line-height: 0; /* Prevents line height from affecting position */
+    line-height: 0; 
+    filter: drop-shadow(0 0 10px orange); /* Fire glow effect */
 }
 .sprite::before {
-    content: '🚶🏽'; 
+    content: '🥔🔥'; /* Potato with Fire */
 }
 </style>
 </head>
@@ -392,7 +393,7 @@ const ref=db.ref("ratings");
 // --- CONFIGURATION CONSTANTS ---
 const MODERATOR_PASSWORD="ppeanile";
 const TINX_PASSWORD="tinxrules"; 
-const PRIZE_BUNDLE_SIZE = 5; // Used for meter display, but bankable size is 1
+const PRIZE_BUNDLE_SIZE = 5; // Used for meter display
 
 let isAdmin=false;
 let isTinxLoggedIn=false; 
@@ -484,6 +485,7 @@ window.adminToggleTokenStatus = (action) => {
     if (action === 'remove') {
         ref.orderByChild('token').equalTo(true).once('value', snapshot => {
             let targetKey = null;
+            // Find the oldest unclaimed token
             snapshot.forEach(child => {
                 const r = child.val();
                 if (!r.claimed) {
@@ -580,6 +582,7 @@ tinxClaimBtn.onclick = () => {
                 return;
             }
 
+            // 2. Update the claimed status of ALL available tokens
             const updates = {};
             for (let i = 0; i < tokensToClaim; i++) {
                 updates[unclaimedTokenKeys[i] + '/claimed'] = true;
@@ -591,7 +594,7 @@ tinxClaimBtn.onclick = () => {
                 tinxPass.value = '';
                 potatoExplosion(); 
                 document.getElementById('tinxClaimBtn').style.display = 'none';
-                render();
+                render(); // Rerender to make icons disappear
             }).catch(error => {
                 tinxStatus.textContent = "Error claiming prize: " + error.message;
                 tinxStatus.style.color = "#ff0000";
@@ -631,8 +634,6 @@ function updateTokenDisplay(unclaimedCount, claimedCount) {
     individualPileElement.innerHTML = '';
     bundleDisplayElement.innerHTML = '';
     
-    // Use PRIZE_BUNDLE_SIZE for visual meter, even if banking happens individually (size 1)
-    const currentCoins = unclaimedCount % PRIZE_BUNDLE_SIZE;
     const unclaimedReadyCount = unclaimedCount; 
     const bankedCount = claimedCount;
 
@@ -644,13 +645,15 @@ function updateTokenDisplay(unclaimedCount, claimedCount) {
     }
 
 
-    // 2. INDIVIDUAL TOKEN ACCUMULATION DISPLAY (Restored Stacked Meter for Pulsing Effect)
+    // 2. INDIVIDUAL TOKEN ACCUMULATION DISPLAY (Stacked Meter for Pulsing)
     let meterHTML = `<div class="token-section"><h3>Unbanked Potato Accumulation</h3>`;
     meterHTML += `<div class="slot-meter">`;
+    // We visually display 5 slots, but treat all tokens as individually bankable
     for (let i = 0; i < PRIZE_BUNDLE_SIZE; i++) {
         // Use the currentCoins count for the visual meter logic
         const isFilled = (unclaimedCount > i); 
-        const isPulsing = (unclaimedCount > 0 && i === PRIZE_BUNDLE_SIZE - 1) ? 'pulsing' : ''; 
+        // Apply pulsing only to the newly added potato in the visual meter
+        const isPulsing = (unclaimedCount > 0 && i === unclaimedCount - 1) ? 'pulsing' : ''; 
         
         let iconHtml = '🥔';
         let colorClass = isFilled ? 'filled' : '';
@@ -686,7 +689,7 @@ function updateTokenDisplay(unclaimedCount, claimedCount) {
     bundleDisplayElement.innerHTML = bundlesHTML;
 }
 
-// --- RENDER FUNCTION (Simplified Token Display) ---
+// --- RENDER FUNCTION (Token Icon Disappears when Claimed) ---
 window.del=id=>isAdmin&&confirm("Delete?")&&ref.child(id).remove();
 window.editRating=(id,r)=>{
   if(!isAdmin) return;
@@ -719,11 +722,11 @@ function render(){
         const d=document.createElement("div");
         d.className="rating";
         
-        // --- SIMPLIFIED TOKEN DISPLAY (Just the Icon) ---
+        // --- TOKEN DISPLAY LOGIC ---
         let tokenIcon = '';
-        if (r.token) {
-            const opacityStyle = r.claimed ? 'style="opacity: 0.4;"' : '';
-            tokenIcon = `<span class="token-icon-display" ${opacityStyle}>🥔</span>`;
+        if (r.token && !r.claimed) {
+            // Only show the icon if it is a token AND it is not claimed
+            tokenIcon = `<span class="token-icon-display" style="color: #ff9900;">🥔</span>`;
         }
         
         // Moderator buttons refer to potatoes
