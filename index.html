@@ -89,6 +89,31 @@ input:focus, select:focus, textarea:focus {
     animation: bounce 0.5s;
 }
 
+/* --- Tinx Claim Button Styling --- */
+.tinx-claim-style {
+    margin-top: 15px !important;
+    padding: 12px;
+    background: #FFD700 !important;
+    color: #000 !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+}
+
+/* --- Tinx Prize Ready Alert Animation --- */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 255, 0, 0.7); transform: scale(1); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 255, 0, 0); transform: scale(1.05); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 255, 0, 0); transform: scale(1); }
+}
+.prize-ready-pulse {
+    animation: pulse 1.5s infinite;
+    background: #FFD700 !important; 
+}
+#tinxToggle {
+    right: 90px;
+    background: var(--primary-red);
+}
+
 /* --- Toggles and Panels --- */
 .secret-toggle{
   position:fixed;
@@ -105,6 +130,48 @@ input:focus, select:focus, textarea:focus {
   z-index: 100;
   transition: transform 0.2s;
 }
+.secret-toggle:hover { transform: scale(1.1) rotate(5deg); }
+#adminToggle{right:20px} 
+
+.panel{
+  position:fixed;
+  bottom:95px;
+  right:20px;
+  background: var(--clean-bg);
+  padding:18px;
+  border-radius:15px;
+  border:2px solid var(--primary-red);
+  display:none;
+  width:320px; 
+  z-index: 99;
+  box-shadow: 0 0 15px var(--border-glow);
+}
+#tinxPanel{right:90px}
+
+button{
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:18px;
+  background:var(--primary-red);
+  font-weight:bold;
+  cursor:pointer;
+  display: block;
+  width: 100%;
+  color: #fff;
+}
+.rating button {
+    margin-top: 5px;
+    background: #444;
+    color: #eee;
+    border: 1px solid var(--primary-red);
+}
+.rating button:hover {
+    background: var(--primary-red);
+    color: #000;
+}
+
+/* --- RATING & DECAY STYLES --- */
 .rating{
   margin-top:25px; 
   padding:20px;
@@ -157,6 +224,10 @@ input:focus, select:focus, textarea:focus {
 .comment-form input {
     margin-bottom: 5px;
 }
+.token-icon-display {
+    font-size: 1.5em;
+    margin-left: 10px;
+}
 
 /* --- FLAMING POTATO SPRITE ANIMATION --- */
 @keyframes walk {
@@ -175,6 +246,99 @@ input:focus, select:focus, textarea:focus {
 }
 .sprite::before {
     content: '🥔🔥'; 
+}
+
+/* --- EXPLOSION ANIMATION --- */
+.potato-explosion {
+  position: fixed; 
+  inset: 0;
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10em;
+  color: #ff9900;
+  animation: explode 3s ease-out forwards;
+}
+.potato-explosion::before {
+  content: '🥔'; 
+  animation: potato-jiggle 0.1s infinite;
+  text-shadow: 0 0 50px rgba(255, 153, 0, 0.8), 0 0 100px rgba(255, 69, 0, 0.5);
+}
+@keyframes explode {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(3); opacity: 0.8; }
+  100% { transform: scale(10); opacity: 0; }
+}
+@keyframes potato-jiggle {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(-0deg); }
+}
+/* Stacked Meter Styles */
+@keyframes coinPulse { 
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); box-shadow: 0 0 8px #ff9900; } 
+    100% { transform: scale(1); }
+}
+.slot-meter {
+    display: flex;
+    justify-content: center;
+    gap: 8px; 
+    margin-top: 10px;
+    min-height: 40px; 
+}
+.coin-slot {
+    font-size: 2.2em;
+    color: #333; 
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+.coin-slot.filled {
+    color: #ff9900; 
+    filter: drop-shadow(0 0 8px #ff9900);
+}
+.coin-slot.pulsing {
+    animation: coinPulse 0.6s ease-out; 
+}
+.banked-token-icon {
+    color: #00ff00; 
+    filter: drop-shadow(0 0 5px #00ff00);
+}
+
+#individualTokenPile {
+    font-size: 1.1em; 
+    min-width: 250px; 
+    text-align: center;
+    padding: 10px;
+    background: #250025;
+    border: 1px solid #444;
+    border-radius: 10px;
+}
+#bundleDisplay {
+    font-size: 1.1em;
+    min-width: 250px;
+    padding: 10px;
+    background: #250025;
+    border: 1px solid #444;
+    border-radius: 10px;
+}
+.token-section {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+    margin-bottom: 10px;
+}
+#tokenDisplay {
+    margin-top: 30px;
+    padding-top: 20px; 
+    border-top: 1px solid var(--primary-red); 
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-around; 
+    align-items: flex-start;
+    gap: 20px;
 }
 </style>
 </head>
@@ -245,25 +409,25 @@ input:focus, select:focus, textarea:focus {
 <div id="tinxToggle" class="secret-toggle"><i class="fas fa-trophy"></i></div> 
 
 <div id="adminPanel" class="panel">
-    <label>Moderator Password</label>
-    <input type="password" id="adminPass">
-    <button id="adminLogin">Login</button>
-    <p id="adminStatus"></p>
-    
-    <div id="adminTools" style="display:none; margin-top: 15px; border-top: 1px solid var(--primary-red); padding-top: 10px;">
-        <p style="color: #ff99c2; font-weight: bold; margin-bottom: 5px;">Potato Control</p>
-        <button onclick="adminToggleTokenStatus('add')"><i class="fas fa-plus"></i> Add New Potato</button>
-        <button onclick="adminToggleTokenStatus('remove')"><i class="fas fa-minus"></i> Remove Oldest Potato</button>
-    </div>
+  <label>Moderator Password</label>
+  <input type="password" id="adminPass">
+  <button id="adminLogin">Login</button>
+  <p id="adminStatus"></p>
+  
+  <div id="adminTools" style="display:none; margin-top: 15px; border-top: 1px solid var(--primary-red); padding-top: 10px;">
+    <p style="color: #ff99c2; font-weight: bold; margin-bottom: 5px;">Potato Control</p>
+    <button onclick="adminToggleTokenStatus('add')"><i class="fas fa-plus"></i> Add New Potato</button>
+    <button onclick="adminToggleTokenStatus('remove')"><i class="fas fa-minus"></i> Remove Oldest Potato</button>
+  </div>
 </div>
 
 <div id="tinxPanel" class="panel">
-    <label>Tinx Password</label>
-    <input type="password" id="tinxPass">
-    <button id="tinxClaimLogin">LOGIN / CHECK POTATOES</button> 
-    
-    <button id="tinxClaimBtn" class="tinx-claim-style" style="display: none;">CLAIM AVAILABLE POTATOES</button>
-    <p id="tinxStatus"></p>
+  <label>Tinx Password</label>
+  <input type="password" id="tinxPass">
+  <button id="tinxClaimLogin">LOGIN / CHECK POTATOES</button> 
+  
+  <button id="tinxClaimBtn" class="tinx-claim-style" style="display: none;">CLAIM AVAILABLE POTATOES</button>
+  <p id="tinxStatus"></p>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -284,7 +448,8 @@ const ref=db.ref("ratings");
 const MODERATOR_PASSWORD="ppeanile";
 const TINX_PASSWORD="tinxrules"; 
 const PRIZE_BUNDLE_SIZE = 5; 
-const DECAY_PERIOD_MS = 1000 * 60 * 60 * 24; // 24 hours decay time (for testing, use 1000 * 60 * 5 for 5 minutes)
+// Set decay time to a small value for easy testing (e.g., 5 minutes)
+const DECAY_PERIOD_MS = 1000 * 60 * 5; // 5 minutes decay time
 
 let isAdmin=false;
 let isTinxLoggedIn=false; 
@@ -295,7 +460,7 @@ const sfx5Star = document.getElementById('sfx5Star');
 const sfx1Star = document.getElementById('sfx1Star');
 const sfxClaim = document.getElementById('sfxClaim');
 
-// Start theme song automatically (requires user interaction in most browsers, so we try to play on first click)
+// Start theme song automatically (requires user interaction in most browsers)
 document.addEventListener('click', function() {
     if (themeSong.paused) {
         themeSong.volume = 0.3; // Lower the volume
@@ -304,25 +469,13 @@ document.addEventListener('click', function() {
 }, { once: true });
 
 
-// --- UTILITY FUNCTIONS (Potato Explosion, Blood Bubble, etc.) ---
+// --- UTILITY FUNCTIONS ---
 function potatoExplosion(){ 
   const f=document.createElement("div");
   f.className="potato-explosion";
   document.body.appendChild(f);
   setTimeout(()=>f.remove(), 3000); 
 }
-function spawnBloodBubble() {
-    const b = document.createElement("div");
-    b.className = "bubble";
-    const size = Math.random() * 80 + 40; 
-    b.style.width = `${size}px`;
-    b.style.height = `${size}px`;
-    b.style.left = `${Math.random() * 100}vw`; 
-    b.style.top = `${Math.random() * 100}vh`; 
-    document.body.appendChild(b);
-    setTimeout(() => b.remove(), 4000); 
-}
-setInterval(spawnBloodBubble, 2500); 
 
 // --- DECAY CHECKER AND STABILIZATION ---
 function checkAndApplyDecay(ratingKey, rating) {
@@ -378,7 +531,7 @@ window.submitComment = (ratingKey) => {
     });
 };
 
-// --- TOGGLE HANDLERS (omitted for brevity) ---
+// --- TOGGLE HANDLERS ---
 adminToggle.onclick=()=>adminPanel.style.display=adminPanel.style.display==="block"?"none":"block";
 tinxToggle.onclick=()=>{
     tinxToggle.classList.remove('prize-ready-pulse');
@@ -389,7 +542,7 @@ tinxToggle.onclick=()=>{
     isTinxLoggedIn = false;
 };
 
-// --- LOGIN/ADMIN LOGIC (omitted for brevity) ---
+// --- LOGIN LOGIC (Moderator) ---
 adminLogin.onclick=()=>{
   if(adminPass.value===MODERATOR_PASSWORD){
     isAdmin=true;
@@ -403,8 +556,169 @@ adminLogin.onclick=()=>{
     adminStatus.style.color = "#ff0000";
   }
 };
-// ... (adminSetToken and adminToggleTokenStatus remain the same) ...
-// ... (tinxClaimLogin and tinxClaimBtn remain the same) ...
+
+
+// --- MODERATOR TOKEN CONTROL ---
+window.adminSetToken = (id, status) => {
+    if (!isAdmin) {
+        alert("You must be logged in as Moderator to modify potatoes.");
+        return;
+    }
+    const actionText = status ? 'ADD' : 'REMOVE';
+    if (!confirm(`Are you sure you want to ${actionText} potato status for this rating?`)) {
+        return;
+    }
+    
+    const updates = {};
+    updates.token = status;
+    updates.claimed = status ? false : null; 
+    updates.stable = status ? false : null; // Newly added tokens start UNSTABLE
+    updates.stars = status ? 5 : 4; 
+
+    ref.child(id).once('value', snapshot => {
+        const currentRating = snapshot.val();
+        if (!status && currentRating.stars !== 5) {
+             updates.stars = currentRating.stars; 
+        }
+
+        ref.child(id).update(updates).then(() => {
+            alert(`Potato status successfully ${actionText}ed!`);
+            render();
+        }).catch(error => {
+            alert("Error updating potato status: " + error.message);
+        });
+    });
+};
+
+window.adminToggleTokenStatus = (action) => {
+    if (!isAdmin) return;
+    
+    if (action === 'remove') {
+        ref.orderByChild('token').equalTo(true).once('value', snapshot => {
+            let targetKey = null;
+            // Find the oldest unclaimed token
+            snapshot.forEach(child => {
+                const r = child.val();
+                if (!r.claimed) {
+                    targetKey = child.key;
+                    return true;
+                }
+            });
+            
+            if (targetKey) {
+                ref.child(targetKey).update({token: false, claimed: null, stable: null, stars: 4}).then(() => {
+                    alert("Oldest unclaimed potato removed and rating stars set to 4!");
+                    render();
+                });
+            } else {
+                alert("No unclaimed potatoes found to remove.");
+            }
+        });
+    
+    } else if (action === 'add') {
+        ref.push({
+            name: "MODERATOR ADDED POINT",
+            character: "Moderator",
+            stars: 5,
+            pp: 1,
+            review: "Manually added potato by moderator.",
+            token: true, 
+            claimed: false, 
+            stable: false, // Manually added tokens start UNSTABLE
+            time: Date.now()
+        }).then(() => {
+            alert("New unclaimed potato added!");
+            render();
+        });
+    }
+};
+
+
+// --- TINX LOGIN / CLAIM LOGIC ---
+document.getElementById('tinxClaimLogin').onclick = () => {
+    const password = tinxPass.value;
+    if (password !== TINX_PASSWORD) {
+        tinxStatus.textContent = "Incorrect Tinx Password.";
+        tinxStatus.style.color = "#ff0000";
+        document.getElementById('tokenDisplay').style.display = 'none'; 
+        isTinxLoggedIn = false;
+        document.getElementById('tinxClaimBtn').style.display = 'none';
+        return;
+    }
+
+    // SUCCESSFUL LOGIN
+    document.getElementById('tokenDisplay').style.display = 'flex'; 
+    isTinxLoggedIn = true;
+    tinxToggle.classList.remove('prize-ready-pulse'); 
+    
+    ref.orderByChild('token').equalTo(true).once('value', snapshot => {
+        let unclaimedTokensCount = 0;
+        snapshot.forEach(child => {
+            if (child.val().token && !child.val().claimed) {
+                unclaimedTokensCount++;
+            }
+        });
+
+        if (unclaimedTokensCount > 0) {
+            document.getElementById('tinxClaimBtn').style.display = 'block';
+            document.getElementById('tinxClaimBtn').textContent = `CLAIM ${unclaimedTokensCount} AVAILABLE POTATO(S)`;
+            tinxStatus.textContent = `${unclaimedTokensCount} prize potato(s) ready to claim.`;
+        } else {
+            document.getElementById('tinxClaimBtn').style.display = 'none';
+            tinxStatus.textContent = `No new prize potatoes ready.`;
+        }
+        tinxStatus.style.color = "#ff99c2";
+    });
+};
+
+tinxClaimBtn.onclick = () => {
+    tinxStatus.textContent = "Processing claim...";
+    tinxStatus.style.color = "#ff99c2";
+    
+    ref.orderByChild('token').equalTo(true).once('value', snapshot => {
+        const unclaimedTokenKeys = [];
+        snapshot.forEach(child => {
+            if (child.val().token && !child.val().claimed) {
+                unclaimedTokenKeys.push(child.key);
+            }
+        });
+
+        const tokensToClaim = unclaimedTokenKeys.length;
+
+        if (tokensToClaim > 0) {
+            
+            if (!confirm(`Are you sure you want to bank ${tokensToClaim} prize potato(es)?`)) {
+                tinxStatus.textContent = "Claiming cancelled.";
+                return;
+            }
+
+            const updates = {};
+            for (let i = 0; i < tokensToClaim; i++) {
+                updates[unclaimedTokenKeys[i] + '/claimed'] = true;
+                // Tokens are stable once claimed/banked
+                updates[unclaimedTokenKeys[i] + '/stable'] = true; 
+            }
+            
+            db.ref('ratings').update(updates).then(() => {
+                tinxStatus.textContent = `SUCCESS! ${tokensToClaim} potato(es) moved to Banked Prizes.`;
+                tinxStatus.style.color = "#00ff00";
+                tinxPass.value = '';
+                potatoExplosion(); 
+                sfxClaim.currentTime = 0; sfxClaim.play();
+                document.getElementById('tinxClaimBtn').style.display = 'none';
+                render(); 
+            }).catch(error => {
+                tinxStatus.textContent = "Error claiming prize: " + error.message;
+                tinxStatus.style.color = "#ff0000";
+            });
+
+        } else {
+            tinxStatus.textContent = `No prize potatoes available to claim.`;
+            tinxStatus.style.color = "#ff0000";
+            document.getElementById('tinxClaimBtn').style.display = 'none';
+        }
+    });
+};
 
 
 // --- SAVE RATING LOGIC (with SFX and Decay Initialization) ---
@@ -435,7 +749,7 @@ saveBtn.onclick=()=>{
 };
 
 
-// --- TOKEN VISUALS (omitted for brevity) ---
+// --- TOKEN VISUALS (Stacked Slot Meter & Alerts) ---
 function updateTokenDisplay(unclaimedCount, claimedCount) {
     const individualPileElement = document.getElementById('individualTokenPile');
     const bundleDisplayElement = document.getElementById('bundleDisplay');
@@ -519,11 +833,13 @@ function render(){
         if (r.token && !r.claimed && !r.stable) {
             decayClass = 'rating-decaying';
             const timeRemaining = DECAY_PERIOD_MS - (Date.now() - r.time);
-            const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
-            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            const totalSeconds = Math.max(0, Math.floor(timeRemaining / 1000));
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
             
             if (timeRemaining > 0) {
-                decayInfo = `<p class="decay-timer"><i class="fas fa-exclamation-triangle"></i> Decaying! Time Left: ${hours}h ${minutes}m</p>`;
+                decayInfo = `<p class="decay-timer"><i class="fas fa-exclamation-triangle"></i> Decaying! Time Left: ${hours}h ${minutes}m ${seconds}s</p>`;
             } else {
                 decayInfo = `<p class="decay-timer"><i class="fas fa-skull-crossbones"></i> DECAY IMMINENT!</p>`;
             }
